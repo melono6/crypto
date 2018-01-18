@@ -99,12 +99,12 @@ class DashboardComponent extends React.Component {
             rates = {};
         
         Object.keys(this.state.portfolio).forEach((key) => {
-            let exchange = this.state.portfolio[key].exchange
+            let exchange = this.state.portfolio[key].exchange;
             
             if (!exchanges.hasOwnProperty(exchange)) {
                 exchanges[exchange] = [];
             }
-            exchanges[exchange].push(key)
+            exchanges[exchange].push(key);
         });
         
         Object.keys(exchanges).forEach((key) => {
@@ -256,6 +256,9 @@ class DashboardComponent extends React.Component {
                                     Coin
                                 </th>
                                 <th>
+                                    Exchange
+                                </th>
+                                <th>
                                     Holdings
                                 </th>
                                 <th>
@@ -270,6 +273,10 @@ class DashboardComponent extends React.Component {
                                         <td>
                                             <img src={"/images/coins/" + coin.coin + ".png"}/>
                                             <h4>{coin.coin}</h4>
+                                        </td>
+                                        <td>
+                                            <p>{coin.holdings[self.state.pairing]}</p>
+                                            {coin.exchange}
                                         </td>
                                         <td>
                                             <p>{coin.holdings[self.state.pairing]}</p>
