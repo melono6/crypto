@@ -1,16 +1,16 @@
-/*jslint node:true, nomen: true, esnext: true*/
+/*jslint node:true, nomen: true, esnext: true */
 'use strict';
 
 const mongoose = require('mongoose'),
     dbs = require('../../lib/mongoose-connections'),
     Schema = mongoose.Schema,
-    schemaName = 'supplier';
+    schemaName = 'portfolio';
 
 let Model,
     mongoSchema;
 
 
-mongoSchema = new Schema(require('./supplier-schema'));
+mongoSchema = new Schema(require('./portfolio-schema'));
 
 mongoSchema.on('init', function (Model) {
     let initData;

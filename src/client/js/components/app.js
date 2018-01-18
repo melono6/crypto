@@ -59,29 +59,7 @@ class DashboardComponent extends React.Component {
                     exchange: "poloniex"
                 }
             },
-            rates: {
-                DGB: {
-                    poloniex: {
-                        BTC: 0.00000576,
-                        USD: 0.0674,
-                        GBP: 0.04942
-                    }
-                },
-                XRP: {
-                    poloniex: {
-                        BTC: 0.0001321,
-                        USD: 1.55,
-                        GBP: 1.14
-                    }
-                },
-                BTC: {
-                    poloniex: {
-                        BTC: 1,
-                        USD: 11783.72,
-                        GBP: 8664.86
-                    }
-                }
-            },
+            rates: {},
             pairing: 'GBP',
             myCurrency: 'GBP',
             symbols: {
@@ -91,42 +69,13 @@ class DashboardComponent extends React.Component {
             },
             portfolioValues: {
                 total: {
-                    GBP: 3185.17,
-                    USD: 3185.17,
-                    BTC: 0.37598139
+                    GBP: 0,
+                    USD: 0,
+                    BTC: 0
                 },
-                coins: [{
-                    coin: 'DGB',
-                    holdings: {
-                        GBP: 507.54,
-                        USD: 507.54,
-                        BTC: 0.60165,
-                        amount: 10500
-                    },
-                    price: {
-                        GBP: 0.4890659,
-                        USD: 0.4890659,
-                        BTC: 0.00000573
-                    }
-                }, {
-                    coin: 'XRP',
-                    holdings: {
-                        GBP: 1098.43,
-                        USD: 1098.43,
-                        BTC: 0.13021063,
-                        amount: 984
-                    },
-                    price: {
-                        GBP: 1.12,
-                        USD: 1.12,
-                        BTC: 0.00013170
-                    }
-                }]
+                coins: []
             }, 
-            fiatRates: {
-                USD: 1,
-                GBP: 0.72095
-            }
+            fiatRates: {}
         };
     }
 
@@ -146,7 +95,7 @@ class DashboardComponent extends React.Component {
     getRates() {
         let self = this,
             exchanges = {},
-            promises = [],
+            promises = [self.rateApi(['BTC'], ['USD', 'GBP', 'BTC'])],
             rates = {};
         
         Object.keys(this.state.portfolio).forEach((key) => {
@@ -159,7 +108,7 @@ class DashboardComponent extends React.Component {
         });
         
         Object.keys(exchanges).forEach((key) => {
-             promises.push(self.rateApi(key, exchanges[key], 'BTC'));
+             promises.push(self.rateApi(exchanges[key], ['BTC'], key));
         });
         
         return Promise.all(promises).then((data) => {
@@ -169,23 +118,35 @@ class DashboardComponent extends React.Component {
                         rates[coin] = {};
                     }
                     rates[coin][rate[coin].exchange] = rate[coin][rate[coin].exchange];
+                    
+                    if(coin !== 'BTC') {
+                        rates[coin][rate[coin].exchange].GBP = rates[coin][rate[coin].exchange].BTC * rates.BTC.default.GBP;
+                        rates[coin][rate[coin].exchange].USD = rates[coin][rate[coin].exchange].BTC * rates.BTC.default.USD;
+                    }
                 });
+            });
+            self.setState({
+                rates: rates
             });
             return;
         });
     }
     
-    rateApi(exchange, from, to) {
-        return new Promise((resolve, reject) => {
-            let url = "https://min-api.cryptocompare.com/data/pricemulti?fsyms=" + from.join(',') + "&tsyms=" + to,
+    rateApi(from, to, exchange) {
+        return new Promise((resolve) => {
+            let url = "https://min-api.cryptocompare.com/data/pricemulti?fsyms=" + from.join(',') + "&tsyms=" + to.join(','),
                 ret = {};
+            
+            if (exchange) {
+                url += "&e=" + exchange;
+            }
             
             xhr(url, 'GET', (data) => {
                 Object.keys(data).forEach((key) => {
                     ret[key] = {
-                        exchange: exchange
+                        exchange: exchange || 'default'
                     };
-                    ret[key][exchange] = data[key];
+                    ret[key][exchange || 'default'] = data[key];
                 });
                 resolve(ret);
             });
@@ -195,7 +156,7 @@ class DashboardComponent extends React.Component {
     getFiatRates() {
         let self = this;
         
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             let url = "https://api.fixer.io/latest?symbols=GBP&base=USD";
             
             xhr(url, 'GET', (data) => {
