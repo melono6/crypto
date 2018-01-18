@@ -1,0 +1,7 @@
+{> "partials/structure/main" /}
+
+{<main-content}
+    <div class="app">
+
+    </div>
+{/main-content}

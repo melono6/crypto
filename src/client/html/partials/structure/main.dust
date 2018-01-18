@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{> "partials/structure/head" /}
+
+<body>
+
+{> "partials/structure/nav" /}
+
+<main>
+    {+main-content/}
+</main>
+
+<script src="js/index.js"></script>
+</body>
+</html>

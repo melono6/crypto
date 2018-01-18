@@ -1,0 +1,29 @@
+[{
+    "product": "Small wongle",
+    "supplier": "New Co Ltd",
+    "price": 5
+}, {
+    "product": "Large wongle",
+    "supplier": "New Co Ltd",
+    "price": 8
+}, {
+    "product": "Super wongle",
+    "supplier": "New Co Ltd",
+    "price": 12
+}, {
+    "product": "Mini wongle",
+    "supplier": "Old Co Ltd",
+    "price": 4
+}, {
+    "product": "Small wongle",
+    "supplier": "Old Co Ltd",
+    "price": 6
+}, {
+    "product": "Large wongle",
+    "supplier": "Old Co Ltd",
+    "price": 9
+}, {
+    "product": "Super wongle",
+    "supplier": "Old Co Ltd",
+    "price": 13
+}]
