@@ -13,7 +13,7 @@ cfg.basePath = '';
 cfg.mongodb = {
     connections: [{
         name: "main",
-        connectionString: "mongodb://localhost:27017/techtest"
+        connectionString: "mongodb://localhost:27017/crypto"
     }]
 };
 

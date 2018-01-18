@@ -6,6 +6,6 @@ const ReactDOM = require('react-dom'),
     App = require('./components/app');
 
 ReactDOM.render(
-  <DashboardComponent />,
+  <App />,
   document.querySelector('.app')
 );
