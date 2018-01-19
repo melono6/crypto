@@ -35,6 +35,7 @@
     "express-enrouten": "1.2.0",
     "gulp-uglify": "^3.0.0",
     "method-override": "^2.3.1",
-    "mongoose": "^4.5.9"
+    "mongoose": "^4.5.9",
+    "socket.io-client": "^2.0.4"
   }
 }

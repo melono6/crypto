@@ -3,7 +3,8 @@
 
 const ReactDOM = require('react-dom'),
     React = require('react'),
-      xhr = require('../actions/xhr');
+      xhr = require('../actions/xhr'),
+      io = require('socket.io-client');
 
 class DashboardComponent extends React.Component {
     constructor(props) {
@@ -40,7 +41,7 @@ class DashboardComponent extends React.Component {
                         price: 0.00000365,
                         quantity: 500
                     }],
-                    exchange: "poloniex"
+                    exchange: "Poloniex"
                 },
                 XRP: {
                     transactions: [{
@@ -56,7 +57,27 @@ class DashboardComponent extends React.Component {
                         price: 0.00017782,
                         quantity: 340
                     }],
-                    exchange: "poloniex"
+                    exchange: "Poloniex"
+                },
+                SC: {
+                    transactions: [{
+                        type: 'BUY',
+                        price: 0.00000157,
+                        quantity: 10000
+                    }, {
+                        type: 'BUY',
+                        price: 0.00000152,
+                        quantity: 4775
+                    }, {
+                        type: 'BUY',
+                        price: 0,
+                        quantity: 1600
+                    }, {
+                        type: 'BUY',
+                        price: 0.00000370,
+                        quantity: 220
+                    }],
+                    exchange: "Poloniex"
                 }
             },
             rates: {},
@@ -85,6 +106,9 @@ class DashboardComponent extends React.Component {
             return this.getRates();
         }).then(() => {
             this.calculateValues();
+            setTimeout(() => {
+                this.initSockets();
+            }, 5000)
         });
     }
 
@@ -171,6 +195,42 @@ class DashboardComponent extends React.Component {
         });
     }
     
+    initSockets() {
+        let socket = io.connect('https://streamer.cryptocompare.com/'),
+            subscription = ['5~CCCAGG~BTC~USD', '5~CCCAGG~BTC~GBP'];
+        Object.keys(this.state.portfolio).forEach((coin) => {
+            subscription.push('2~' + this.state.portfolio[coin].exchange + '~' + coin + '~BTC');
+        });
+
+        socket.emit('SubAdd', { subs: subscription });
+        socket.on("m", (message) =>  {
+            this.setRate(message);
+        });
+    }
+    
+    setRate(message) {
+        let rate = message.split('~'),
+            ratesCopy = Object.assign({}, this.state.rates);
+        
+        if (rate.length > 3) {
+            if (rate[2] !== 'BTC') {
+                ratesCopy[rate[2]][rate[1]] = {
+                    BTC: rate[5],
+                    GBP: rate[5] * ratesCopy.BTC.default.GBP,
+                    USD: rate[5] * ratesCopy.BTC.default.USD
+                };
+            } else {
+                ratesCopy.BTC.default[rate[3]] = rate[5];
+            }
+            
+            this.setState({
+                rates: ratesCopy
+            }, () => {
+                this.calculateValues();
+            });
+        }
+    }
+    
     calculateValues() {
         let self = this,
             values = {
@@ -199,6 +259,7 @@ class DashboardComponent extends React.Component {
                     BTC: quantity * rate.BTC,
                     amount: quantity
                 },
+                exchange: this.state.portfolio[key].exchange,
                 price: {
                     GBP: rate.GBP,
                     USD: rate.USD,
@@ -227,6 +288,13 @@ class DashboardComponent extends React.Component {
             });
         }
     }
+    
+    refreshData() {
+        console.log('??');
+        this.getRates().then(() => {
+            this.calculateValues();
+        });
+    }
 
     render() {
         let self = this;
@@ -235,7 +303,7 @@ class DashboardComponent extends React.Component {
             <React.Fragment>
                 <nav>
                     <ul>
-                        <li>Graph</li>
+                        <li onClick={self.refreshData.bind(self)}>Refresh</li>
                         <li>Add Coin</li>
                     </ul>
                 </nav>
@@ -275,7 +343,6 @@ class DashboardComponent extends React.Component {
                                             <h4>{coin.coin}</h4>
                                         </td>
                                         <td>
-                                            <p>{coin.holdings[self.state.pairing]}</p>
                                             {coin.exchange}
                                         </td>
                                         <td>
