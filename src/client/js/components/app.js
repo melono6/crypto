@@ -81,7 +81,7 @@ class DashboardComponent extends React.Component {
                 }
             },
             rates: {},
-            pairing: 'GBP',
+            pairing: 'USD',
             myCurrency: 'GBP',
             symbols: {
                 GBP: "£",
@@ -101,19 +101,18 @@ class DashboardComponent extends React.Component {
     }
 
     componentDidMount() {
-        //this.calculateValues();
         this.getFiatRates().then(() => {
             return this.getRates();
         }).then(() => {
             this.calculateValues();
             setTimeout(() => {
                 this.initSockets();
-            }, 5000)
+            }, 5000);
+            
+            setInterval(() => {
+                this.calculateValues();
+            }, 5000);
         });
-    }
-
-    getData() {
-    
     }
     
     getRates() {
@@ -142,11 +141,6 @@ class DashboardComponent extends React.Component {
                         rates[coin] = {};
                     }
                     rates[coin][rate[coin].exchange] = rate[coin][rate[coin].exchange];
-                    
-                    if(coin !== 'BTC') {
-                        rates[coin][rate[coin].exchange].GBP = rates[coin][rate[coin].exchange].BTC * rates.BTC.default.GBP;
-                        rates[coin][rate[coin].exchange].USD = rates[coin][rate[coin].exchange].BTC * rates.BTC.default.USD;
-                    }
                 });
             });
             self.setState({
@@ -215,9 +209,7 @@ class DashboardComponent extends React.Component {
         if (rate.length > 3) {
             if (rate[2] !== 'BTC') {
                 ratesCopy[rate[2]][rate[1]] = {
-                    BTC: rate[5],
-                    GBP: rate[5] * ratesCopy.BTC.default.GBP,
-                    USD: rate[5] * ratesCopy.BTC.default.USD
+                    BTC: rate[5]
                 };
             } else {
                 ratesCopy.BTC.default[rate[3]] = rate[5];
@@ -225,8 +217,6 @@ class DashboardComponent extends React.Component {
             
             this.setState({
                 rates: ratesCopy
-            }, () => {
-                this.calculateValues();
             });
         }
     }
@@ -254,21 +244,21 @@ class DashboardComponent extends React.Component {
             values.coins.push({
                 coin: key,
                 holdings: {
-                    GBP: quantity * rate.GBP,
-                    USD: quantity * rate.USD,
+                    GBP: quantity * (rate.BTC * self.state.rates.BTC.default.GBP),
+                    USD: quantity * (rate.BTC * self.state.rates.BTC.default.USD),
                     BTC: quantity * rate.BTC,
                     amount: quantity
                 },
                 exchange: this.state.portfolio[key].exchange,
                 price: {
-                    GBP: rate.GBP,
-                    USD: rate.USD,
+                    GBP: rate.BTC * self.state.rates.BTC.default.GBP,
+                    USD: rate.BTC * self.state.rates.BTC.default.USD,
                     BTC: rate.BTC
                 }
             });
             
-           values.total.GBP += quantity * rate.GBP;
-           values.total.USD += quantity * rate.USD;
+           values.total.GBP += quantity * (rate.BTC * self.state.rates.BTC.default.GBP);
+           values.total.USD += quantity * (rate.BTC * self.state.rates.BTC.default.USD);
            values.total.BTC += quantity * rate.BTC;
         });
 
@@ -290,7 +280,6 @@ class DashboardComponent extends React.Component {
     }
     
     refreshData() {
-        console.log('??');
         this.getRates().then(() => {
             this.calculateValues();
         });
