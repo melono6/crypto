@@ -84,6 +84,9 @@ a {
 
 
 main {
+    font-size: 2rem;
+    width: 100%;
+    
     nav {
         ul {
             list-style: none;
@@ -97,9 +100,24 @@ main {
     
     .overview {
         display: flex;
+        
+        .total {
+            margin-right: auto;
+        }
+        
+        h3 {
+            span {
+                display: block;
+            }
+        }
     }
     
     table {
+        width: 100%;
+        
+        img {
+           width: 3rem; 
+        }
         thead {
             background-color: grey;
         }

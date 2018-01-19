@@ -17,7 +17,7 @@ module.exports = function (gulp) {
                 .pipe(plumber.stop()),
 
             browserified = gulp.src(['client/js/*.js', '!client/js/serviceWorker.js'])
-                .pipe(browser.browserify({transform: "babelify", options: {presets: ["react", ["env", {"targets": {"browsers": ["ie >= 10", "last 2 versions"]}}]]}}))
+                .pipe(browser.browserify({transform: "babelify", options: {presets: ["react", ["env", {"targets": {"browsers": ["last 2 versions"]}}]]}}))
                 //.pipe(uglify())
                 .pipe(plumber.stop())
                 .pipe(gulp.dest('../dist/js/')),

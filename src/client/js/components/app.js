@@ -286,7 +286,15 @@ class DashboardComponent extends React.Component {
     }
 
     render() {
-        let self = this;
+        let self = this,
+            round = function (value) {
+                if (self.state.pairing === 'BTC') {
+                    return value.toFixed(8);
+                }
+                return value.toFixed(2);
+            };
+        
+        
         
         return (
             <React.Fragment>
@@ -299,10 +307,10 @@ class DashboardComponent extends React.Component {
             
                 <div className="overview">
                     <div className="total" onClick={self.togglePairing.bind(self)}>
-                        <h3>Total Portfolio Value <span>{self.state.symbols[self.state.pairing]}{self.state.portfolioValues.total[self.state.pairing]}</span></h3>
+                        <h3>Total Portfolio Value <span>{self.state.symbols[self.state.pairing]}{round(self.state.portfolioValues.total[self.state.pairing])}</span></h3>
                     </div>
                     <div className="change">
-                        <h3>24hr Change <span>+37.55%</span></h3>
+                        <h3>24hr Change <span>+00.00%</span></h3>
                     </div>
                 </div>
                 <div className="coins">
@@ -328,18 +336,18 @@ class DashboardComponent extends React.Component {
                                 return (
                                     <tr key={i}>
                                         <td>
-                                            <img src={"/images/coins/" + coin.coin + ".png"}/>
+                                            <img src={"/img/logos/" + coin.coin + "-alt.svg"}/>
                                             <h4>{coin.coin}</h4>
                                         </td>
                                         <td>
                                             {coin.exchange}
                                         </td>
                                         <td>
-                                            <p>{coin.holdings[self.state.pairing]}</p>
-                                            {coin.holdings.amount}
+                                            <p>{self.state.symbols[self.state.pairing]}{round(coin.holdings[self.state.pairing])}</p>
+                                            {coin.holdings.amount} coins
                                         </td>
                                         <td>
-                                            {self.state.symbols[self.state.pairing]}{coin.price[self.state.pairing]}
+                                            {self.state.symbols[self.state.pairing]}{round(coin.price[self.state.pairing])}
                                         </td>
                                     </tr>
                                 );
