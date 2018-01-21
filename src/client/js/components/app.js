@@ -289,7 +289,7 @@ class DashboardComponent extends React.Component {
         let self = this,
             round = function (value) {
                 if (self.state.pairing === 'BTC') {
-                    return value.toFixed(8);
+                    return parseFloat(value.toFixed(8));
                 }
                 return value.toFixed(2);
             };
