@@ -4,7 +4,8 @@
 const ReactDOM = require('react-dom'),
     React = require('react'),
       xhr = require('../actions/xhr'),
-      io = require('socket.io-client');
+      io = require('socket.io-client'),
+      Coin = require('./coin');
 
 class DashboardComponent extends React.Component {
     constructor(props) {
@@ -96,7 +97,8 @@ class DashboardComponent extends React.Component {
                 },
                 coins: []
             }, 
-            fiatRates: {}
+            fiatRates: {},
+            selectedCoin: null
         };
     }
 
@@ -198,6 +200,7 @@ class DashboardComponent extends React.Component {
 
         socket.emit('SubAdd', { subs: subscription });
         socket.on("m", (message) =>  {
+            console.log(message);
             this.setRate(message);
         });
     }
@@ -206,13 +209,13 @@ class DashboardComponent extends React.Component {
         let rate = message.split('~'),
             ratesCopy = Object.assign({}, this.state.rates);
         
-        if (rate.length > 3) {
+        if (rate.length > 3 && parseFloat(rate[5]) > 0) {
             if (rate[2] !== 'BTC') {
                 ratesCopy[rate[2]][rate[1]] = {
-                    BTC: rate[5]
+                    BTC: parseFloat(rate[5])
                 };
             } else {
-                ratesCopy.BTC.default[rate[3]] = rate[5];
+                ratesCopy.BTC.default[rate[3]] = parseFloat(rate[5]);
             }
             
             this.setState({
@@ -284,12 +287,20 @@ class DashboardComponent extends React.Component {
             this.calculateValues();
         });
     }
+    
+    coinClickHandler(coin) {
+        this.setState({selectedCoin: coin});
+    }
+    
+    coinClose() {
+        this.setState({selectedCoin: null});  
+    }
 
     render() {
         let self = this,
             round = function (value) {
                 if (self.state.pairing === 'BTC') {
-                    return parseFloat(value.toFixed(8));
+                    return parseFloat(value).toFixed(8);
                 }
                 return value.toFixed(2);
             };
@@ -334,7 +345,7 @@ class DashboardComponent extends React.Component {
                         <tbody>
                             {self.state.portfolioValues.coins.map(function (coin, i) {
                                 return (
-                                    <tr key={i}>
+                                    <tr key={i} onClick={self.coinClickHandler.bind(self, coin.coin)}>
                                         <td>
                                             <img src={"/img/logos/" + coin.coin + "-alt.svg"}/>
                                             <h4>{coin.coin}</h4>
@@ -354,6 +365,9 @@ class DashboardComponent extends React.Component {
                             })}
                         </tbody>
                     </table>
+                </div>
+                <div className={self.state.selectedCoin ? 'show coin-container' : 'coin-container'}>
+                    <Coin selectedCoin={self.state.selectedCoin} coinPortfolio={self.state.portfolio[self.state.selectedCoin]} coinClose={self.coinClose.bind(self)} />
                 </div>
             </React.Fragment>
         );
