@@ -5,7 +5,8 @@ const ReactDOM = require('react-dom'),
     React = require('react'),
       xhr = require('../actions/xhr'),
       io = require('socket.io-client'),
-      Coin = require('./coin');
+      Coin = require('./coin'),
+      New = require('./new');
 
 class DashboardComponent extends React.Component {
     constructor(props) {
@@ -87,7 +88,7 @@ class DashboardComponent extends React.Component {
             symbols: {
                 GBP: "£",
                 USD: "$",
-                BTC: "฿"
+                BTC: "฿ "
             },
             portfolioValues: {
                 total: {
@@ -98,7 +99,8 @@ class DashboardComponent extends React.Component {
                 coins: []
             }, 
             fiatRates: {},
-            selectedCoin: null
+            selectedCoin: null,
+            addCoin: null
         };
     }
 
@@ -295,6 +297,14 @@ class DashboardComponent extends React.Component {
     coinClose() {
         this.setState({selectedCoin: null});  
     }
+    
+    newOpen() {
+        this.setState({addCoin: true});  
+    }
+    
+    newClose() {
+        this.setState({addCoin: null});  
+    }
 
     render() {
         let self = this,
@@ -305,14 +315,15 @@ class DashboardComponent extends React.Component {
                 return value.toFixed(2);
             };
         
-        
-        
         return (
             <React.Fragment>
                 <nav>
+                    <div className="title">
+                        My Coin Portfolio
+                    </div>
                     <ul>
                         <li onClick={self.refreshData.bind(self)}>Refresh</li>
-                        <li>Add Coin</li>
+                        <li onClick={self.newOpen.bind(self)}>Add Coin</li>
                     </ul>
                 </nav>
             
@@ -368,6 +379,10 @@ class DashboardComponent extends React.Component {
                 </div>
                 <div className={self.state.selectedCoin ? 'show coin-container' : 'coin-container'}>
                     <Coin selectedCoin={self.state.selectedCoin} coinPortfolio={self.state.portfolio[self.state.selectedCoin]} coinClose={self.coinClose.bind(self)} />
+                </div>
+                
+                <div className={self.state.addCoin ? 'show add-container' : 'add-container'}>
+                    <New newClose={self.newClose.bind(self)} />
                 </div>
             </React.Fragment>
         );

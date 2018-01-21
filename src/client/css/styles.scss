@@ -88,12 +88,23 @@ main {
     width: 100%;
     
     nav {
+        background-color: #000000;
+        color: #ffffff;
+        display: flex;
+        padding: 1.5rem;
+        
         ul {
             list-style: none;
             display: flex;
+            margin-left:auto;
+            text-align: right;
             
             li {
+                margin-left: 1.5rem;
                 
+                &:first-child {
+                    margin-left: none;
+                }
             }
         }
     }
@@ -114,12 +125,26 @@ main {
     
     table {
         width: 100%;
+        border-spacing: 0;
         
         img {
            width: 3rem; 
         }
+        
         thead {
             background-color: grey;
+            
+            th {
+                padding: .5rem 1rem;
+                color: #ffffff;
+            }
+        }
+        
+        tbody {
+            td {
+                border-bottom: 1px solid grey;
+                padding: .5rem 1rem;
+            }
         }
     }
 }
@@ -129,6 +154,23 @@ main {
     height: 100vh;
     width: 100vw;
     transform: translateX(100%);
+    transition: all 0.5s;
+    background-color: #ffffff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    &.show {
+        pointer-events: auto;
+        transform: translateX(0%);
+    }
+}
+
+.add-container {
+    pointer-events: none;
+    height: 100vh;
+    width: 100vw;
+    transform: translateX(-100%);
     transition: all 0.5s;
     background-color: #ffffff;
     position: absolute;

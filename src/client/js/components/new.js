@@ -6,7 +6,7 @@ const ReactDOM = require('react-dom'),
       xhr = require('../actions/xhr'),
       io = require('socket.io-client');
 
-class Coin extends React.Component {
+class New extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -24,12 +24,11 @@ class Coin extends React.Component {
         return (
             <div className="coin">
                 <nav>
-                    <div className="title" onClick={this.props.coinClose}>
-                       ← {this.props.selectedCoin}
+                    <div className="title" onClick={this.props.newClose}>
+                       ← Add Coin
                     </div>
                     <ul>
-                        <li>Delete</li>
-                        <li>Add Transaction</li>
+
                     </ul>
                 </nav>
             </div>
@@ -37,4 +36,4 @@ class Coin extends React.Component {
     }
 }
 
-module.exports = Coin;
+module.exports = New;
