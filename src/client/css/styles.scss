@@ -15,6 +15,7 @@
 html {
     font-size: 10px;
     overflow-y: scroll;
+    overflow-x: hidden;
     text-size-adjust: 100%; // Prevent font scaling in landscape while allowing user zoom */
 }
 
@@ -87,6 +88,10 @@ main {
     font-size: 2rem;
     width: 100%;
     
+    .app {
+        overflow: hidden;
+    }
+    
     nav {
         background-color: #000000;
         color: #ffffff;
@@ -149,7 +154,7 @@ main {
     }
 }
 
-.coin-container {
+.coin-container, .add-container{
     pointer-events: none;
     height: 100vh;
     width: 100vw;
@@ -159,6 +164,7 @@ main {
     position: absolute;
     top: 0;
     left: 0;
+    max-width: 100%;
     
     &.show {
         pointer-events: auto;
@@ -167,18 +173,5 @@ main {
 }
 
 .add-container {
-    pointer-events: none;
-    height: 100vh;
-    width: 100vw;
     transform: translateX(-100%);
-    transition: all 0.5s;
-    background-color: #ffffff;
-    position: absolute;
-    top: 0;
-    left: 0;
-    
-    &.show {
-        pointer-events: auto;
-        transform: translateX(0%);
-    }
 }

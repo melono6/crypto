@@ -305,6 +305,14 @@ class DashboardComponent extends React.Component {
     newClose() {
         this.setState({addCoin: null});  
     }
+    
+    updateCoin(coin, value) {
+        let portfolioCopy = Object.assign({}, this.state.porfolio);
+        
+        portfolioCopy[coin] = value;
+        
+        this.setState({porfolio: portfolioCopy});
+    }
 
     render() {
         let self = this,
@@ -378,11 +386,11 @@ class DashboardComponent extends React.Component {
                     </table>
                 </div>
                 <div className={self.state.selectedCoin ? 'show coin-container' : 'coin-container'}>
-                    <Coin selectedCoin={self.state.selectedCoin} coinPortfolio={self.state.portfolio[self.state.selectedCoin]} coinClose={self.coinClose.bind(self)} />
+                    <Coin selectedCoin={self.state.selectedCoin} coinPortfolio={self.state.portfolio[self.state.selectedCoin]} coinClose={self.coinClose.bind(self)} updateCoin={self.updateCoin.bind(self)} />
                 </div>
                 
                 <div className={self.state.addCoin ? 'show add-container' : 'add-container'}>
-                    <New newClose={self.newClose.bind(self)} />
+                    <New newClose={self.newClose.bind(self)} updateCoin={self.updateCoin.bind(self)} />
                 </div>
             </React.Fragment>
         );
