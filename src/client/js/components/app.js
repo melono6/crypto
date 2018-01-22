@@ -108,8 +108,7 @@ class DashboardComponent extends React.Component {
     componentDidMount() {
 
         // Load local data
-        this.getLocalData('_id')
-        this.getLocalData('portfolio');
+        this.getAllLocalData();
 
         this.getFiatRates().then(() => {
             return this.getRates();
@@ -208,7 +207,6 @@ class DashboardComponent extends React.Component {
 
         socket.emit('SubAdd', { subs: subscription });
         socket.on("m", (message) =>  {
-            console.log(message);
             this.setRate(message);
         });
     }
@@ -275,6 +273,8 @@ class DashboardComponent extends React.Component {
 
         self.setState({
             portfolioValues: values
+        }, () => {
+            self.setAllLocalData();
         });
     }
     
@@ -327,17 +327,20 @@ class DashboardComponent extends React.Component {
                 portfolio: data.portfolio
             }, () => {
                 this.getRates().then(() => {
-                    this.calculateValues()
+                    this.calculateValues();
                 });
-                this.setLocalData('_id', data._id);
-                this.setLocalData('portfolio', data.portfolio);
             });
         });
     }
 
     setLocalData(key, data) {
       localStorage.setItem(key, JSON.stringify(data));   
-    }    
+    }
+    
+    setAllLocalData() {
+        this.setLocalData('_id', this.state._id);
+        this.setLocalData('portfolio', this.state.portfolio);
+    }
 
     getLocalData(key) {
         const value = localStorage.getItem(key);
@@ -346,11 +349,16 @@ class DashboardComponent extends React.Component {
             return;
         }  
     }
+    
+    getAllLocalData() {
+        this.getLocalData('_id');
+        this.getLocalData('portfolio');
+    }
 
     saveCoinData() {
         if(this.state._id != "") {
             xhr(`/api/v1/portfolios/${ this.state._id }`, 'PUT', (res) => {
-                //console.log(res);
+
             }, 'json', { "id_": this.state._id, "portfolio": this.state.portfolio });  
         } else {
             xhr('/api/v1/portfolios', 'POST', (res) => {
