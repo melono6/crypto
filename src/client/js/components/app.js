@@ -106,6 +106,11 @@ class DashboardComponent extends React.Component {
     }
 
     componentDidMount() {
+
+        // Load local data
+        this.getLocalData('_id')
+        this.getLocalData('portfolio');
+
         this.getFiatRates().then(() => {
             return this.getRates();
         }).then(() => {
@@ -315,29 +320,31 @@ class DashboardComponent extends React.Component {
         this.setState({porfolio: portfolioCopy});
     }
 
-    dothis() {
-        this.getFiatRates().then(() => {
-            return this.getRates();
-        }).then(() => {
-            this.calculateValues();
-            setTimeout(() => {
-                this.initSockets();
-            }, 5000);
-            
-            setInterval(() => {
-                this.calculateValues();
-            }, 5000);
-        });
-    }
-
     getCoinData() {
         xhr(`/api/v1/portfolios/${ this.state._id }`, 'get', (data) => {
             this.setState({
-                    _id: data._id,
-                    portfolio: data.portfolio
+                _id: data._id,
+                portfolio: data.portfolio
+            }, () => {
+                this.getRates().then(() => {
+                    this.calculateValues()
+                });
+                this.setLocalData('_id', data._id);
+                this.setLocalData('portfolio', data.portfolio);
             });
-            this.dothis();
         });
+    }
+
+    setLocalData(key, data) {
+      localStorage.setItem(key, JSON.stringify(data));   
+    }    
+
+    getLocalData(key) {
+        const value = localStorage.getItem(key);
+        if (value) {
+            this.setState({ [key]: JSON.parse(value) });
+            return;
+        }  
     }
 
     saveCoinData() {
