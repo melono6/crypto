@@ -12,6 +12,7 @@ class DashboardComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            "_id": "",
             portfolio: {
                 DGB: {
                     transactions: [{
@@ -314,6 +315,49 @@ class DashboardComponent extends React.Component {
         this.setState({porfolio: portfolioCopy});
     }
 
+    dothis() {
+        this.getFiatRates().then(() => {
+            return this.getRates();
+        }).then(() => {
+            this.calculateValues();
+            setTimeout(() => {
+                this.initSockets();
+            }, 5000);
+            
+            setInterval(() => {
+                this.calculateValues();
+            }, 5000);
+        });
+    }
+
+    getCoinData() {
+        xhr(`/api/v1/portfolios/${ this.state._id }`, 'get', (data) => {
+            this.setState({
+                    _id: data._id,
+                    portfolio: data.portfolio
+            });
+            this.dothis();
+        });
+    }
+
+    saveCoinData() {
+        if(this.state._id != "") {
+            xhr(`/api/v1/portfolios/${ this.state._id }`, 'PUT', (res) => {
+                //console.log(res);
+            }, 'json', { "id_": this.state._id, "portfolio": this.state.portfolio });  
+        } else {
+            xhr('/api/v1/portfolios', 'POST', (res) => {
+                this.setState({
+                    _id: res._id
+                });
+            }, 'json', { "portfolio": this.state.portfolio });     
+        }    
+    }
+
+    onChange(e) {
+        this.setState({_id: e.target.value});
+    }
+
     render() {
         let self = this,
             round = function (value) {
@@ -332,6 +376,9 @@ class DashboardComponent extends React.Component {
                     <ul>
                         <li onClick={self.refreshData.bind(self)}>Refresh</li>
                         <li onClick={self.newOpen.bind(self)}>Add Coin</li>
+                        <li><input type="text" className="form-control" onChange={this.onChange.bind(self)} value={this.state._id} /></li>
+                        <li onClick={self.getCoinData.bind(self)}>Load Coins</li>
+                        <li onClick={self.saveCoinData.bind(self)}>Save Coins</li>
                     </ul>
                 </nav>
             
