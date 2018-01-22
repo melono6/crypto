@@ -13,78 +13,9 @@ class DashboardComponent extends React.Component {
         super(props);
         this.state = {
             "_id": "",
-            portfolio: {
-                DGB: {
-                    transactions: [{
-                        type: 'BUY',
-                        price: 0.00000575,
-                        quantity: 140
-                    }, {
-                        type: 'BUY',
-                        price: 0.00000132,
-                        quantity: 860
-                    }, {
-                        type: 'BUY',
-                        price: 0.00000233,
-                        quantity: 1000
-                    }, {
-                        type: 'BUY',
-                        price: 0.00000253,
-                        quantity: 2000
-                    }, {
-                        type: 'BUY',
-                        price: 0.00000255,
-                        quantity: 2000
-                    }, {
-                        type: 'BUY',
-                        price: 0.00000388,
-                        quantity: 4000
-                    }, {
-                        type: 'BUY',
-                        price: 0.00000365,
-                        quantity: 500
-                    }],
-                    exchange: "Poloniex"
-                },
-                XRP: {
-                    transactions: [{
-                        type: 'BUY',
-                        price: 0.00011600,
-                        quantity: 329.5
-                    }, {
-                        type: 'BUY',
-                        price: 0.00017270,
-                        quantity: 315
-                    }, {
-                        type: 'BUY',
-                        price: 0.00017782,
-                        quantity: 340
-                    }],
-                    exchange: "Poloniex"
-                },
-                SC: {
-                    transactions: [{
-                        type: 'BUY',
-                        price: 0.00000157,
-                        quantity: 10000
-                    }, {
-                        type: 'BUY',
-                        price: 0.00000152,
-                        quantity: 4775
-                    }, {
-                        type: 'BUY',
-                        price: 0,
-                        quantity: 1600
-                    }, {
-                        type: 'BUY',
-                        price: 0.00000370,
-                        quantity: 220
-                    }],
-                    exchange: "Poloniex"
-                }
-            },
+            portfolio: {},
             rates: {},
-            pairing: 'USD',
+            pairing: 'GBP',
             myCurrency: 'GBP',
             symbols: {
                 GBP: "£",
@@ -340,6 +271,9 @@ class DashboardComponent extends React.Component {
     setAllLocalData() {
         this.setLocalData('_id', this.state._id);
         this.setLocalData('portfolio', this.state.portfolio);
+        this.setLocalData('rates', this.state.rates);
+        this.setLocalData('portfolioValues', this.state.portfolioValues);
+        this.setLocalData('fiatRates', this.state.fiatRates);
     }
 
     getLocalData(key) {
@@ -353,10 +287,13 @@ class DashboardComponent extends React.Component {
     getAllLocalData() {
         this.getLocalData('_id');
         this.getLocalData('portfolio');
+        this.getLocalData('rates');
+        this.getLocalData('portfolioValues');
+        this.getLocalData('fiatRates');
     }
 
     saveCoinData() {
-        if(this.state._id != "") {
+        if(this.state._id !== "") {
             xhr(`/api/v1/portfolios/${ this.state._id }`, 'PUT', (res) => {
 
             }, 'json', { "id_": this.state._id, "portfolio": this.state.portfolio });  
