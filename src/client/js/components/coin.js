@@ -10,6 +10,10 @@ class Coin extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            form: {
+                quantity: 0,
+                price: 0
+            },
             addTransaction: null
         };
     }
@@ -65,7 +69,41 @@ class Coin extends React.Component {
     }
     
     addTransaction () {
+        return (
+            <form>
+                <input type="number" placeholder="Quantity" onChange={this.quantityChange.bind(this)} />
+                <input type="number" placeholder="price" step="0.00000001" onChange={this.priceChange.bind(this)} />
+                <button type="button" onClick={this.addTransactionHandler.bind(this)}>
+                    Add
+                </button>
+            </form>
+        );
+    }
+    
+    priceChange (e) {
+        let form = Object.assign({}, this.state.form);
         
+        form.price = parseFloat(e.target.value);
+        this.setState({form: form});
+    }
+
+    quantityChange (e) {
+        let form = Object.assign({}, this.state.form);
+        
+        form.quantity = parseFloat(e.target.value);
+        this.setState({form: form});
+    }
+    
+    addTransactionHandler () {
+        let coinPortfolio = Object.assign({}, this.props.coinPortfolio);
+        
+        coinPortfolio.transactions.push({
+           type: 'BUY',
+            price: this.state.form.price,
+            quantity: this.state.form.quantity
+        });
+        this.props.updateCoin(this.props.selectedCoin, coinPortfolio);
+        this.setState({addTransaction: null});
     }
 
     coinClose() {
