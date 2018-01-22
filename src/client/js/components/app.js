@@ -12,6 +12,7 @@ class DashboardComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            "_id": "",
             portfolio: {
                 DGB: {
                     transactions: [{
@@ -105,6 +106,11 @@ class DashboardComponent extends React.Component {
     }
 
     componentDidMount() {
+
+        // Load local data
+        this.getLocalData('_id')
+        this.getLocalData('portfolio');
+
         this.getFiatRates().then(() => {
             return this.getRates();
         }).then(() => {
@@ -314,6 +320,51 @@ class DashboardComponent extends React.Component {
         this.setState({porfolio: portfolioCopy});
     }
 
+    getCoinData() {
+        xhr(`/api/v1/portfolios/${ this.state._id }`, 'get', (data) => {
+            this.setState({
+                _id: data._id,
+                portfolio: data.portfolio
+            }, () => {
+                this.getRates().then(() => {
+                    this.calculateValues()
+                });
+                this.setLocalData('_id', data._id);
+                this.setLocalData('portfolio', data.portfolio);
+            });
+        });
+    }
+
+    setLocalData(key, data) {
+      localStorage.setItem(key, JSON.stringify(data));   
+    }    
+
+    getLocalData(key) {
+        const value = localStorage.getItem(key);
+        if (value) {
+            this.setState({ [key]: JSON.parse(value) });
+            return;
+        }  
+    }
+
+    saveCoinData() {
+        if(this.state._id != "") {
+            xhr(`/api/v1/portfolios/${ this.state._id }`, 'PUT', (res) => {
+                //console.log(res);
+            }, 'json', { "id_": this.state._id, "portfolio": this.state.portfolio });  
+        } else {
+            xhr('/api/v1/portfolios', 'POST', (res) => {
+                this.setState({
+                    _id: res._id
+                });
+            }, 'json', { "portfolio": this.state.portfolio });     
+        }    
+    }
+
+    onChange(e) {
+        this.setState({_id: e.target.value});
+    }
+
     render() {
         let self = this,
             round = function (value) {
@@ -332,6 +383,9 @@ class DashboardComponent extends React.Component {
                     <ul>
                         <li onClick={self.refreshData.bind(self)}>Refresh</li>
                         <li onClick={self.newOpen.bind(self)}>Add Coin</li>
+                        <li><input type="text" className="form-control" onChange={this.onChange.bind(self)} value={this.state._id} /></li>
+                        <li onClick={self.getCoinData.bind(self)}>Load Coins</li>
+                        <li onClick={self.saveCoinData.bind(self)}>Save Coins</li>
                     </ul>
                 </nav>
             
