@@ -26,27 +26,25 @@ module.exports = function (gulp) {
                     entries: 'client/js/index.js', 
                     debug: true
                 })
-                .transform("babelify", {presets: ["react", ["env", {"targets": {"browsers": browserMatrix}}]]})
+                .transform("babelify", {presets: ["react", ["env", {"targets": {"browsers": ["last 2 versions"]}}]]})
                 .bundle()
                 .pipe(source('index.js'))
                 .pipe(buffer())
                 .pipe(sourcemaps.init({loadMaps: true}))
                 .pipe(sourcemaps.write('./'))
-                .pipe(gulp.dest('../dist/js/'));
-        
-//        ,
-//            
-//            serviceWorker = browserify({
-//                    entries: 'assets/js/serviceWorker.js', 
-//                    debug: true
-//                })
-//                .transform("babelify", {presets: [["env", {"targets": {"browsers": browserMatrix}}]]})
-//                .bundle()
-//                .pipe(source('serviceWorker.js'))
-//                .pipe(buffer())
-//                .pipe(uglify())
-//                .pipe(gulp.dest('../Brc.Web.dist/'));
+                .pipe(gulp.dest('../dist/js/')),
+            
+            serviceWorker = browserify({
+                    entries: 'client/js/serviceWorker.js', 
+                    debug: true
+                })
+                .transform("babelify", {presets: [["env", {"targets": {"browsers": ["last 2 versions"]}}]]})
+                .bundle()
+                .pipe(source('serviceWorker.js'))
+                .pipe(buffer())
+                .pipe(uglify())
+                .pipe(gulp.dest('../dist/'));
 
-        return merge( browserified);
+        return merge(browserified, serviceWorker);
     };
 };
