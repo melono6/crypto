@@ -1,35 +1,52 @@
-/*jslint node:true */
+/*jslint node:true, esnext:true */
 'use strict';
 
 module.exports = function (gulp) {
-    var plumber = require('gulp-plumber');
-    var sourcemaps = require('gulp-sourcemaps');
-    var uglify = require('gulp-uglify');
-    var jslint = require('gulp-jslint');
-    var browser = require('gulp-browser');
-    var merge = require('merge-stream');
-    var babelify = require('babelify');
+    const plumber = require('gulp-plumber'),
+        sourcemaps = require('gulp-sourcemaps'),
+        jslint = require('gulp-jslint'),
+        merge = require('merge-stream'),
+        //babel = require('gulp-babel'),
+        uglify = require('gulp-uglify'),
+        babelify = require('babelify'),
+        browserMatrix = require('../package.json').browsers,
+        browserify = require('browserify'),
+        source = require('vinyl-source-stream'),
+        buffer = require('vinyl-buffer');
 
     return function () {
-        var jslinted =
-                gulp.src(['client/js/**/*.js', '!client/js/lib/**'])
-                .pipe(jslint())
-                .pipe(plumber.stop()),
-
-            browserified = gulp.src(['client/js/*.js', '!client/js/serviceWorker.js'])
-                .pipe(browser.browserify({transform: "babelify", options: {presets: ["react", ["env", {"targets": {"browsers": ["last 2 versions"]}}]]}}))
-                //.pipe(uglify())
-                .pipe(plumber.stop())
-                .pipe(gulp.dest('../dist/js/')),
-
-            serviceWorker = gulp.src('client/js/serviceWorker.js')
-                .pipe(browser.browserify())
-                .pipe(sourcemaps.init())
-                .pipe(uglify())
+        let 
+//        jslinted =
+//                gulp.src(['client/js/components/*.js', 'client/js/framework*.js'])
+//                .pipe(jslint())
+//                .pipe(plumber.stop())
+//                .pipe(jslint.reporter('default')),
+            
+            browserified = browserify({
+                    entries: 'client/js/index.js', 
+                    debug: true
+                })
+                .transform("babelify", {presets: ["react", ["env", {"targets": {"browsers": browserMatrix}}]]})
+                .bundle()
+                .pipe(source('index.js'))
+                .pipe(buffer())
+                .pipe(sourcemaps.init({loadMaps: true}))
                 .pipe(sourcemaps.write('./'))
-                .pipe(plumber.stop())
-                .pipe(gulp.dest('../dist/'));
+                .pipe(gulp.dest('../dist/js/'));
+        
+//        ,
+//            
+//            serviceWorker = browserify({
+//                    entries: 'assets/js/serviceWorker.js', 
+//                    debug: true
+//                })
+//                .transform("babelify", {presets: [["env", {"targets": {"browsers": browserMatrix}}]]})
+//                .bundle()
+//                .pipe(source('serviceWorker.js'))
+//                .pipe(buffer())
+//                .pipe(uglify())
+//                .pipe(gulp.dest('../Brc.Web.dist/'));
 
-        return merge(jslinted, browserified, serviceWorker);
+        return merge( browserified);
     };
 };
