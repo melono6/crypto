@@ -96,7 +96,6 @@ class New extends React.Component {
                                 return (
                                     <tr key={i} onClick={self.addCoin.bind(self, coin)}>
                                         <td>
-                                            <img src={"https://www.cryptocompare.com" + self.props.coins[coin.Symbol].ImageUrl}/>
                                             <h4>{coin.Name}</h4>
                                         </td>
                                         <td>
