@@ -32,16 +32,15 @@ class DashboardComponent extends React.Component {
             }, 
             fiatRates: {},
             selectedCoin: null,
-            addCoin: null
+            addCoin: null,
+            coins: {},
         };
     }
 
     componentDidMount() {
-
-        // Load local data
-        this.getAllLocalData();
-
-        this.getFiatRates().then(() => {
+        this.getCoins().then(() => {
+            return this.getAllLocalData();
+        }).then(() => {
             return this.getRates();
         }).then(() => {
             this.calculateValues();
@@ -52,6 +51,20 @@ class DashboardComponent extends React.Component {
             setInterval(() => {
                 this.calculateValues();
             }, 5000);
+        });
+    }
+    
+    getCoins () {
+        return new Promise((resolve) => {
+            let url = "https://min-api.cryptocompare.com/data/all/coinlist";
+            
+            xhr(url, 'GET', (data) => {
+                this.setState({
+                    coins: data.Data
+                }, () => {
+                    resolve();
+                });
+            });
         });
     }
     
@@ -309,6 +322,20 @@ class DashboardComponent extends React.Component {
     onChange(e) {
         this.setState({_id: e.target.value});
     }
+    
+    addCoin (coin, init) {
+        let portfolio = Object.assign({}, this.state.portfolio);
+        
+        portfolio[coin] = init;
+        
+        this.setState({
+            portfolio: portfolio
+        }, () => {
+            this.getRates().then(() => {
+                this.calculateValues();
+            });
+        });
+    }
 
     render() {
         let self = this,
@@ -365,7 +392,7 @@ class DashboardComponent extends React.Component {
                                 return (
                                     <tr key={i} onClick={self.coinClickHandler.bind(self, coin.coin)}>
                                         <td>
-                                            <img src={"/img/logos/" + coin.coin + "-alt.svg"}/>
+                                            <img src={"https://www.cryptocompare.com" + self.state.coins[coin.coin].ImageUrl}/>
                                             <h4>{coin.coin}</h4>
                                         </td>
                                         <td>
@@ -389,7 +416,7 @@ class DashboardComponent extends React.Component {
                 </div>
                 
                 <div className={self.state.addCoin ? 'show add-container' : 'add-container'}>
-                    <New newClose={self.newClose.bind(self)} updateCoin={self.updateCoin.bind(self)} />
+                    <New newClose={self.newClose.bind(self)} updateCoin={self.updateCoin.bind(self)} coins={self.state.coins} addCoin={self.addCoin.bind(self)} />
                 </div>
             </React.Fragment>
         );
