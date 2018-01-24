@@ -12,7 +12,7 @@ class DashboardComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "_id": "",
+            _id: "",
             portfolio: {},
             rates: {},
             pairing: 'GBP',
@@ -80,9 +80,11 @@ class DashboardComponent extends React.Component {
             if (!exchanges.hasOwnProperty(exchange)) {
                 exchanges[exchange] = [];
             }
-            exchanges[exchange].push(key);
+            if (key !== 'BTC') {
+                exchanges[exchange].push(key);
+            }
         });
-        
+        console.log(exchanges);
         Object.keys(exchanges).forEach((key) => {
              promises.push(self.rateApi(exchanges[key], ['BTC'], key));
         });
@@ -95,6 +97,11 @@ class DashboardComponent extends React.Component {
                     }
                     rates[coin][rate[coin].exchange] = rate[coin][rate[coin].exchange];
                 });
+            });
+            Object.keys(exchanges).forEach((key) => {
+                rates.BTC[key] = {
+                    BTC: 1
+                };
             });
             self.setState({
                 rates: rates
@@ -159,7 +166,7 @@ class DashboardComponent extends React.Component {
         let rate = message.split('~'),
             ratesCopy = Object.assign({}, this.state.rates);
         
-        if (rate.length > 3 && parseFloat(rate[5]) > 0) {
+        if (rate.length > 3 && parseFloat(rate[5]) > 0 && parseFloat(rate[5]) < 100000) {
             if (rate[2] !== 'BTC') {
                 ratesCopy[rate[2]][rate[1]] = {
                     BTC: parseFloat(rate[5])
@@ -184,7 +191,7 @@ class DashboardComponent extends React.Component {
                 },
                 coins: []
             };
-            
+
         Object.keys(this.state.portfolio).forEach((key) => {
             let rate = self.state.rates[key][this.state.portfolio[key].exchange],
                 coin = this.state.portfolio[key],

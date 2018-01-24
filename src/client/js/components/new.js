@@ -20,7 +20,7 @@ class New extends React.Component {
     
     getExchanges(coin) {
         return new Promise((resolve) => {
-            let url = "https://www.cryptocompare.com/api/data/coinsnapshot/?fsym=" + coin.Symbol + "&tsym=BTC";
+            let url = "/api/v1/coinsnapshot/?fsym=" + coin.Symbol + "&tsym=BTC";
             
             xhr(url, 'GET', (data) => {
                 this.setState({
