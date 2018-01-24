@@ -294,6 +294,7 @@ class DashboardComponent extends React.Component {
         this.setLocalData('rates', this.state.rates);
         this.setLocalData('portfolioValues', this.state.portfolioValues);
         this.setLocalData('fiatRates', this.state.fiatRates);
+        this.setLocalData('coins', this.state.coins);
     }
 
     getLocalData(key) {
@@ -310,6 +311,7 @@ class DashboardComponent extends React.Component {
         this.getLocalData('rates');
         this.getLocalData('portfolioValues');
         this.getLocalData('fiatRates');
+        this.getLocalData('coins');
     }
 
     saveCoinData() {
@@ -362,7 +364,7 @@ class DashboardComponent extends React.Component {
                     <ul>
                         <li onClick={self.refreshData.bind(self)}>Refresh</li>
                         <li onClick={self.newOpen.bind(self)}>Add Coin</li>
-                        <li><input type="text" className="form-control" onChange={this.onChange.bind(self)} value={this.state._id} /></li>
+                        <li><input type="text" onChange={this.onChange.bind(self)} value={this.state._id} /></li>
                         <li onClick={self.getCoinData.bind(self)}>Load Coins</li>
                         <li onClick={self.saveCoinData.bind(self)}>Save Coins</li>
                     </ul>

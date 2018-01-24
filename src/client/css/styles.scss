@@ -17,6 +17,7 @@ html {
     overflow-y: scroll;
     overflow-x: hidden;
     text-size-adjust: 100%; // Prevent font scaling in landscape while allowing user zoom */
+    font-family: sans-serif;
 }
 
 body {
@@ -105,6 +106,7 @@ main {
             text-align: right;
             
             li {
+                font-size: 1.8rem;
                 margin-left: 1.5rem;
                 
                 &:first-child {
@@ -116,13 +118,16 @@ main {
     
     .overview {
         display: flex;
+        padding: .5rem 1.5rem;
         
         .total {
             margin-right: auto;
         }
         
         h3 {
+            font-size: 16px;
             span {
+                font-size: 22px;
                 display: block;
             }
         }
@@ -140,6 +145,8 @@ main {
             background-color: grey;
             
             th {
+                font-size: 1.6rem;
+                font-weight: normal;
                 padding: .5rem 1rem;
                 color: #ffffff;
             }

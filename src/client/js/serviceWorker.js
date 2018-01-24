@@ -7,13 +7,12 @@ const PRECACHE_URLS = [
     'index.html',
     './', // Alias for index.html
     '/',
-    'offline.html',
-    'assets/css/styles.css',
-    'assets/js/index.js'
+    'css/styles.css',
+    'js/index.js'
 ];
 
 const devEnvs = [
-    'http://localhost:8000'
+    'http://localhost:7000'
 ];
 
 const extensionCache = [
@@ -33,15 +32,21 @@ const DEBUG = devEnvs.indexOf(self.location.origin) > -1 ? true : false;
 
 // The install handler takes care of precaching the resources we always need.
 self.addEventListener('install', event => {
+    console.log('"1?');
     event.waitUntil(
         caches.open(PRECACHE)
         .then(cache => cache.addAll(PRECACHE_URLS))
+        .then((cache) => {
+            console.log(cache)
+            return;
+        })
         .then(self.skipWaiting())
     );
 });
 
 // The activate handler takes care of cleaning up old caches.
 self.addEventListener('activate', event => {
+    console.log('test?');
     const currentCaches = [PRECACHE, RUNTIME];
     event.waitUntil(
         caches.keys().then(cacheNames => {
