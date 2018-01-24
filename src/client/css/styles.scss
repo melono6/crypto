@@ -9,7 +9,7 @@ main {
     }
     
     nav {
-        background-color: #000000;
+        background-color: #0a5ba8;
         color: #ffffff;
         display: flex;
         padding: 1.5rem;
@@ -87,9 +87,7 @@ main {
     top: 0;
     left: 60%;
     max-width: 40%;
-    box-shadow: -11px 0 17px -11px rgba(0, 0, 0, 0.8);
-    border-left: .1rem solid white;
-    border-right: .1rem solid white;
+    box-shadow: 0 0 17px rgba(0,0,0,.8);
     visibility: hidden;
     
     &.show {
@@ -101,7 +99,6 @@ main {
 
 .add-container {
     transform: translateX(-100%);
-    box-shadow: 11px 0 17px -11px rgba(0, 0, 0, 0.8);
     left: 0;
     
     .search-container {
