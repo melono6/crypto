@@ -76,8 +76,8 @@ class New extends React.Component {
 
                     </ul>
                 </nav>
-                <div>
-                    <input type="text" onChange={self.onSearch.bind(self)} />
+                <div className="search-container">
+                    <input type="text" placeholder="Search coins" onChange={self.onSearch.bind(self)} />
                 </div>
                 <div className="coins">
                     <table>

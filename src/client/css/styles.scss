@@ -85,15 +85,34 @@ main {
     background-color: #ffffff;
     position: absolute;
     top: 0;
-    left: 0;
-    max-width: 100%;
+    left: 60%;
+    max-width: 40%;
+    box-shadow: -11px 0 17px -11px rgba(0, 0, 0, 0.8);
+    border-left: .1rem solid white;
+    border-right: .1rem solid white;
+    visibility: hidden;
     
     &.show {
         pointer-events: auto;
         transform: translateX(0%);
+        visibility: visible;
     }
 }
 
 .add-container {
     transform: translateX(-100%);
+    box-shadow: 11px 0 17px -11px rgba(0, 0, 0, 0.8);
+    left: 0;
+    
+    .search-container {
+        display: flex;
+        
+        input[type=text] {
+            width: 100%;
+            padding: .9rem 2rem;
+            border: 1px solid #e2e2e2;
+            height: 4.8rem;
+            margin: .5rem;
+        }
+    }
 }
