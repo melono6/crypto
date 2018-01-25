@@ -5,12 +5,10 @@
 
 <body>
 
-{> "partials/structure/nav" /}
+    <main>
+        {+main-content/}
+    </main>
 
-<main>
-    {+main-content/}
-</main>
-
-<script async defer src="js/index.js"></script>
+    <script async defer src="js/index.js"></script>
 </body>
 </html>

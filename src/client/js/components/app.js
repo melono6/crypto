@@ -85,7 +85,7 @@ class DashboardComponent extends React.Component {
                 exchanges[exchange].push(key);
             }
         });
-        console.log(exchanges);
+
         Object.keys(exchanges).forEach((key) => {
              promises.push(self.rateApi(exchanges[key], ['BTC'], key));
         });
@@ -444,6 +444,12 @@ class DashboardComponent extends React.Component {
                 
                 <div className={self.state.addCoin ? 'show add-container' : 'add-container'}>
                     <New ref="newCoin" newClose={self.newClose.bind(self)} updateCoin={self.updateCoin.bind(self)} coins={self.state.coins} addCoin={self.addCoin.bind(self)} />
+                </div>
+                
+                <div className="footer">
+                    <div className="code">
+                        {this.state._id}
+                    </div>
                 </div>
             </React.Fragment>
         );

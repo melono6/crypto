@@ -1,5 +1,10 @@
 @import "partials/reset.scss";
 
+html, body {
+    width: 100vw;
+    overflow-x: hidden;
+}
+
 $blue: #0a5ba8;
 
 main {
@@ -129,6 +134,7 @@ main {
     top: 0;
     left: 60%;
     max-width: 40%;
+    min-width: 44rem;
     box-shadow: 0 0 17px rgba(0,0,0,.8);
     visibility: hidden;
     
@@ -153,5 +159,22 @@ main {
             height: 4.8rem;
             margin: .5rem;
         }
+    }
+}
+
+.footer {
+    padding: 2rem;
+    background-color: grey;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+}
+
+@media (min-width:128px) and (max-width:767px) {
+    .coin-container, .add-container {
+        width: 100vw;
+        max-width: 100%;
+        left: 0;
     }
 }
