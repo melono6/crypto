@@ -7,7 +7,8 @@ module.exports = function (gulp) {
         postcss = require('gulp-postcss'),
         autoprefixer = require('autoprefixer'),
         nano = require('gulp-cssnano'),
-        sourcemaps = require('gulp-sourcemaps');
+        sourcemaps = require('gulp-sourcemaps'),
+        browserSync = require('browser-sync');
 
     return function () {
         return gulp.src('client/css/*.scss')
@@ -21,6 +22,7 @@ module.exports = function (gulp) {
             .pipe(nano())
             .pipe(sourcemaps.write('./'))
             .pipe(plumber.stop())
-            .pipe(gulp.dest('../dist/css'));
+            .pipe(gulp.dest('../dist/css'))
+            .pipe(browserSync.stream());
     };
 };

@@ -4,10 +4,10 @@
 const cfg = {};
 
 cfg.http = {
-    port: process.env.PORT || 8000
+    port: process.env.PORT || 5000
 };
 
-cfg.baseUrl = 'http://127.0.0.1:8000';
+cfg.baseUrl = 'http://127.0.0.1:5000';
 cfg.basePath = '';
 
 cfg.mongodb = {

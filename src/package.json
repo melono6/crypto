@@ -8,6 +8,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "babelify": "^8.0.0",
+    "browser-sync": "^2.23.6",
     "browserify": "^15.2.0",
     "dust-naming-convention-filters": "^0.1.0",
     "dustjs-helpers": "^1.7.3",

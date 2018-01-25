@@ -10,7 +10,8 @@ module.exports = function (gulp) {
         babelify = require('babelify'),
         browserify = require('browserify'),
         source = require('vinyl-source-stream'),
-        buffer = require('vinyl-buffer');
+        buffer = require('vinyl-buffer'),
+        browserSync = require('browser-sync');
 
     return function () {
         let 
@@ -30,7 +31,8 @@ module.exports = function (gulp) {
                 .pipe(buffer())
                 .pipe(sourcemaps.init({loadMaps: true}))
                 .pipe(sourcemaps.write('./'))
-                .pipe(gulp.dest('../dist/js/')),
+                .pipe(gulp.dest('../dist/js/'))
+                .pipe(browserSync.stream()),
             
             serviceWorker = browserify({
                     entries: 'client/js/serviceWorker.js', 

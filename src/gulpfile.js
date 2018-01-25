@@ -15,4 +15,4 @@ require('fs').readdirSync(tasksPath).forEach(
 
 gulp.task('build', [ 'html', 'css', 'js', 'static']);
 gulp.task('default', ['build']);
-gulp.task('develop', gulpSequence('build', ['html-watch','css-watch', 'js-watch', 'static-watch', 'server']));
+gulp.task('develop', gulpSequence('build', ['html-watch','css-watch', 'js-watch', 'static-watch', 'server', 'browsersync']));
