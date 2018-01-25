@@ -137,6 +137,7 @@ main {
     min-width: 44rem;
     box-shadow: 0 0 17px rgba(0,0,0,.8);
     visibility: hidden;
+    z-index: 1;
     
     &.show {
         pointer-events: auto;
@@ -172,9 +173,37 @@ main {
 }
 
 @media (min-width:128px) and (max-width:767px) {
+    .coin {
+        form {
+            display: flex;
+            flex-direction: column;
+
+            input[type=number],
+            select {
+                max-width: calc(100% - 1rem);
+                width: 100%;
+            }
+
+            button {
+                margin: .5rem;
+                padding: .9rem 2rem;
+                flex-grow: 1;
+                border: 0;
+                background-color: $blue;
+                color: #ffffff;
+                font-size: 1.6rem;
+            }
+        }
+    }
+    
     .coin-container, .add-container {
         width: 100vw;
         max-width: 100%;
         left: 0;
+        min-width: auto;
+    }
+    
+    .hidem {
+        display: none;
     }
 }

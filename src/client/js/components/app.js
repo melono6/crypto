@@ -378,9 +378,9 @@ class DashboardComponent extends React.Component {
                         <ul>
                             <li onClick={self.refreshData.bind(self)}>Refresh</li>
                             <li onClick={self.newOpen.bind(self)}>Add Coin</li>
-                            <li><input type="text" onChange={this.onChange.bind(self)} value={this.state._id} /></li>
-                            <li onClick={self.getCoinData.bind(self)}>Load Coins</li>
-                            <li onClick={self.saveCoinData.bind(self)}>Save Coins</li>
+                            <li className="hidem"><input type="text" onChange={this.onChange.bind(self)} value={this.state._id} /></li>
+                            <li className="hidem" onClick={self.getCoinData.bind(self)}>Load Coins</li>
+                            <li className="hidem" onClick={self.saveCoinData.bind(self)}>Save Coins</li>
                         </ul>
                     </nav>
 
@@ -448,7 +448,7 @@ class DashboardComponent extends React.Component {
                 
                 <div className="footer">
                     <div className="code">
-                        {this.state._id}
+                        Portfolio ID: {this.state._id}
                     </div>
                 </div>
             </React.Fragment>
