@@ -15,8 +15,8 @@ class DashboardComponent extends React.Component {
             _id: "",
             portfolio: {},
             rates: {},
-            pairing: 'GBP',
-            myCurrency: 'GBP',
+            pairing: 'USD',
+            myCurrency: 'USD',
             symbols: {
                 GBP: "£",
                 USD: "$",
@@ -39,6 +39,7 @@ class DashboardComponent extends React.Component {
 
     componentDidMount() {
         this.getCoins().then(() => {
+            this.refs.newCoin.filterCoins(false);
             return this.getAllLocalData();
         }).then(() => {
             return this.getRates();
@@ -256,19 +257,24 @@ class DashboardComponent extends React.Component {
     }
     
     newOpen() {
+        document.querySelector('.search-container input').focus();
         this.setState({addCoin: true});  
     }
     
     newClose() {
-        this.setState({addCoin: null});  
+        this.setState({addCoin: null});
     }
     
     updateCoin(coin, value) {
-        let portfolioCopy = Object.assign({}, this.state.porfolio);
+        let portfolioCopy = Object.assign({}, this.state.portfolio);
         
-        portfolioCopy[coin] = value;
-        
-        this.setState({porfolio: portfolioCopy});
+        if (value) {
+            portfolioCopy[coin] = value;
+        } else {
+            delete portfolioCopy[coin];  
+        }
+
+        this.setState({portfolio: portfolioCopy});
     }
 
     getCoinData() {
@@ -345,6 +351,13 @@ class DashboardComponent extends React.Component {
             });
         });
     }
+    
+    closeOthers() {
+        this.setState({
+            selectedCoin: null,
+            addCoin: null
+        });
+    }
 
     render() {
         let self = this,
@@ -357,75 +370,80 @@ class DashboardComponent extends React.Component {
         
         return (
             <React.Fragment>
-                <nav>
-                    <div className="title">
-                        My Coin Portfolio
+                <div className="dash">
+                    <nav>
+                        <div className="title">
+                            My Coin Portfolio
+                        </div>
+                        <ul>
+                            <li onClick={self.refreshData.bind(self)}>Refresh</li>
+                            <li onClick={self.newOpen.bind(self)}>Add Coin</li>
+                            <li><input type="text" onChange={this.onChange.bind(self)} value={this.state._id} /></li>
+                            <li onClick={self.getCoinData.bind(self)}>Load Coins</li>
+                            <li onClick={self.saveCoinData.bind(self)}>Save Coins</li>
+                        </ul>
+                    </nav>
+
+                    <div className="overview">
+                        <div className="total" onClick={self.togglePairing.bind(self)}>
+                            <h3>Total Portfolio Value <span>{self.state.symbols[self.state.pairing]}{round(self.state.portfolioValues.total[self.state.pairing])}</span></h3>
+                        </div>
+                        <div className="change">
+                            <h3>24hr Change <span>+00.00%</span></h3>
+                        </div>
                     </div>
-                    <ul>
-                        <li onClick={self.refreshData.bind(self)}>Refresh</li>
-                        <li onClick={self.newOpen.bind(self)}>Add Coin</li>
-                        <li><input type="text" onChange={this.onChange.bind(self)} value={this.state._id} /></li>
-                        <li onClick={self.getCoinData.bind(self)}>Load Coins</li>
-                        <li onClick={self.saveCoinData.bind(self)}>Save Coins</li>
-                    </ul>
-                </nav>
-            
-                <div className="overview">
-                    <div className="total" onClick={self.togglePairing.bind(self)}>
-                        <h3>Total Portfolio Value <span>{self.state.symbols[self.state.pairing]}{round(self.state.portfolioValues.total[self.state.pairing])}</span></h3>
+                    <div className="coins">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Coin
+                                    </th>
+                                    <th>
+                                        Exchange
+                                    </th>
+                                    <th>
+                                        Holdings
+                                    </th>
+                                    <th>
+                                        Price
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {self.state.portfolioValues.coins.map(function (coin, i) {
+                                    return (
+                                        <tr key={i} onClick={self.coinClickHandler.bind(self, coin.coin)}>
+                                            <td>
+                                                <img src={"https://www.cryptocompare.com" + self.state.coins[coin.coin].ImageUrl}/>
+                                                <h4>{coin.coin}</h4>
+                                            </td>
+                                            <td>
+                                                {coin.exchange}
+                                            </td>
+                                            <td>
+                                                <p>{self.state.symbols[self.state.pairing]}{round(coin.holdings[self.state.pairing])}</p>
+                                                {coin.holdings.amount} coins
+                                            </td>
+                                            <td>
+                                                {self.state.symbols[self.state.pairing]}{round(coin.price[self.state.pairing])}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
                     </div>
-                    <div className="change">
-                        <h3>24hr Change <span>+00.00%</span></h3>
+                    <div className={self.state.selectedCoin || self.state.addCoin ? 'show overlay' : 'overlay'} onClick={self.closeOthers.bind(self)}>
+                        
                     </div>
-                </div>
-                <div className="coins">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>
-                                    Coin
-                                </th>
-                                <th>
-                                    Exchange
-                                </th>
-                                <th>
-                                    Holdings
-                                </th>
-                                <th>
-                                    Price
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {self.state.portfolioValues.coins.map(function (coin, i) {
-                                return (
-                                    <tr key={i} onClick={self.coinClickHandler.bind(self, coin.coin)}>
-                                        <td>
-                                            <img src={"https://www.cryptocompare.com" + self.state.coins[coin.coin].ImageUrl}/>
-                                            <h4>{coin.coin}</h4>
-                                        </td>
-                                        <td>
-                                            {coin.exchange}
-                                        </td>
-                                        <td>
-                                            <p>{self.state.symbols[self.state.pairing]}{round(coin.holdings[self.state.pairing])}</p>
-                                            {coin.holdings.amount} coins
-                                        </td>
-                                        <td>
-                                            {self.state.symbols[self.state.pairing]}{round(coin.price[self.state.pairing])}
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
                 </div>
                 <div className={self.state.selectedCoin ? 'show coin-container' : 'coin-container'}>
                     <Coin selectedCoin={self.state.selectedCoin} coinPortfolio={self.state.portfolio[self.state.selectedCoin]} coinClose={self.coinClose.bind(self)} updateCoin={self.updateCoin.bind(self)} />
                 </div>
                 
                 <div className={self.state.addCoin ? 'show add-container' : 'add-container'}>
-                    <New newClose={self.newClose.bind(self)} updateCoin={self.updateCoin.bind(self)} coins={self.state.coins} addCoin={self.addCoin.bind(self)} />
+                    <New ref="newCoin" newClose={self.newClose.bind(self)} updateCoin={self.updateCoin.bind(self)} coins={self.state.coins} addCoin={self.addCoin.bind(self)} />
                 </div>
             </React.Fragment>
         );

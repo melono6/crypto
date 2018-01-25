@@ -12,9 +12,9 @@ class Coin extends React.Component {
         this.state = {
             form: {
                 quantity: 0,
-                price: 0
-            },
-            addTransaction: null
+                price: 0,
+                type: 'BUY'
+            }
         };
     }
 
@@ -26,64 +26,17 @@ class Coin extends React.Component {
         this.setState({addTransaction: true});
     }
     
-    transactionTable () {
-        if (this.props.coinPortfolio) {
-            return (
-                <div className="coins">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Amount
-                                    </th>
-                                    <th>
-                                        Price per
-                                    </th>
-                                    <th>
-                                        Cost
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.props.coinPortfolio.transactions.map(function (transaction, i) {
-                                    return (
-                                        <tr key={i}>
-                                            <td>
-                                                {transaction.quantity}
-                                            </td>
-                                            <td>
-                                                {transaction.price}
-                                            </td>
-                                            <td>
-                                               {transaction.quantity * transaction.price} 
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-            );
-        }
-        return '';
-    }
-    
-    addTransaction () {
-        return (
-            <form>
-                <input type="number" placeholder="Quantity" onChange={this.quantityChange.bind(this)} />
-                <input type="number" placeholder="price" step="0.00000001" onChange={this.priceChange.bind(this)} />
-                <button type="button" onClick={this.addTransactionHandler.bind(this)}>
-                    Add
-                </button>
-            </form>
-        );
-    }
-    
     priceChange (e) {
         let form = Object.assign({}, this.state.form);
         
         form.price = parseFloat(e.target.value);
+        this.setState({form: form});
+    }
+    
+    typeChange (e) {
+        let form = Object.assign({}, this.state.form);
+        
+        form.type = e.target.value;
         this.setState({form: form});
     }
 
@@ -98,12 +51,24 @@ class Coin extends React.Component {
         let coinPortfolio = Object.assign({}, this.props.coinPortfolio);
         
         coinPortfolio.transactions.push({
-           type: 'BUY',
+            type: this.state.form.type,
             price: this.state.form.price,
             quantity: this.state.form.quantity
         });
         this.props.updateCoin(this.props.selectedCoin, coinPortfolio);
         this.setState({addTransaction: null});
+    }
+    
+    removeTransactionHandler (index) {
+        let coinPortfolio = Object.assign({}, this.props.coinPortfolio);
+        
+        coinPortfolio.transactions.splice(index, 1);
+        
+        this.props.updateCoin(this.props.selectedCoin, coinPortfolio);
+    }
+    
+    removeCoinHandler () {
+        this.props.updateCoin(this.props.selectedCoin, null);
     }
 
     coinClose() {
@@ -113,7 +78,7 @@ class Coin extends React.Component {
 
     render() {
         let self = this,
-            view = self.state.addTransaction ? self.addTransaction() : self.transactionTable();
+            coinPortfolio = self.props.coinPortfolio || {transactions: []};
 
         return (
             <div className="coin">
@@ -122,11 +87,66 @@ class Coin extends React.Component {
                        ← {this.props.selectedCoin}
                     </div>
                     <ul>
-                        <li>Delete</li>
-                        <li onClick={self.openAdd.bind(self)}>Add Transaction</li>
+                        <li onClick={self.removeCoinHandler.bind(self)}>Delete</li>
                     </ul>
                 </nav>
-                {view}
+                <form>
+                    <select defaultValue={this.state.form.type} onChange={this.typeChange.bind(this)}>
+                        <option>BUY</option>
+                        <option>SELL</option>
+                    </select>
+                    <input type="number" placeholder="Quantity" onChange={this.quantityChange.bind(this)} />
+                    <input type="number" placeholder="price" step="0.00000001" onChange={this.priceChange.bind(this)} />
+                    <button type="button" onClick={this.addTransactionHandler.bind(this)}>
+                        Add
+                    </button>
+                </form>
+                <div className="coins">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                                <th>
+                                    Price per
+                                </th>
+                                <th>
+                                    Cost
+                                </th>
+                                <th>
+                                    
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {coinPortfolio.transactions.map(function (transaction, i) {
+                                return (
+                                    <tr key={i}>
+                                        <td>
+                                            {transaction.type}
+                                        </td>
+                                        <td>
+                                            {transaction.quantity}
+                                        </td>
+                                        <td>
+                                            {transaction.price}
+                                        </td>
+                                        <td>
+                                           {transaction.quantity * transaction.price} 
+                                        </td>
+                                        <td onClick={self.removeTransactionHandler.bind(self, i)}>
+                                           remove
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         );
     }

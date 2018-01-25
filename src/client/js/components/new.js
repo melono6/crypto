@@ -15,7 +15,7 @@ class New extends React.Component {
     }
 
     componentDidMount() {
-        
+    
     }
     
     getExchanges(coin) {
@@ -35,21 +35,31 @@ class New extends React.Component {
     }
     
     onSearch (e) {
-        if (e.target.value.length > 1) {
+        if (e.target.value.length > 0) {
             this.filterCoins(e.target.value);
+        } else {
+            this.filterCoins(false);
         }
     }
     
     filterCoins (value) {
         let filtered = [];
         
-        value = value.toLowerCase();
+        if (value) {
+            value = value.toLowerCase();
+        }
         
         Object.keys(this.props.coins).forEach((key) => {
-            if (this.props.coins[key].FullName.toLowerCase().indexOf(value) !== -1) {
+            if (!value || this.props.coins[key].FullName.toLowerCase().indexOf(value) !== -1) {
                 filtered.push(this.props.coins[key]);
             }
         });
+        
+        filtered = filtered.sort((a, b) => {
+            return parseInt(a.SortOrder) - parseInt(b.SortOrder);
+        });
+        
+        filtered = filtered.slice(0, 10);
         
         this.setState({
             filteredCoins: filtered
@@ -77,7 +87,7 @@ class New extends React.Component {
                     </ul>
                 </nav>
                 <div className="search-container">
-                    <input type="text" placeholder="Search coins" onChange={self.onSearch.bind(self)} />
+                    <input type="text" placeholder="Search coins" onChange={self.onSearch.bind(self)} onFocus={self.filterCoins.bind(self, false)} />
                 </div>
                 <div className="coins">
                     <table>
