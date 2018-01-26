@@ -8,7 +8,8 @@ const path = require('path'),
     enrouten = require('express-enrouten'),
     methodOverride = require('method-override'),
     bodyParser = require('body-parser'),
-    slashes = require('connect-slashes');
+    slashes = require('connect-slashes'),
+    compression = require('compression');
 
 let app,
     server;
@@ -16,6 +17,8 @@ let app,
 http.globalAgent.maxSockets = Infinity;
 
 app = express();
+
+app.use(compression());
 
 app.use(methodOverride('_method'));
 

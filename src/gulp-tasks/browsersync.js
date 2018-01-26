@@ -6,7 +6,7 @@ module.exports = function (gulp) {
 
     return function () {
         browserSync.init({
-            files: ['../dist/css/styles.css'],
+            files: ['../dist/css/styles.css', '../dist/js/index.js'],
             proxy: {
                 target: "localhost:5000"
             },

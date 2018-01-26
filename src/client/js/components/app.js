@@ -33,15 +33,18 @@ class DashboardComponent extends React.Component {
             fiatRates: {},
             selectedCoin: null,
             addCoin: null,
-            coins: {},
+            editId: null,
+            coins: null,
         };
     }
 
     componentDidMount() {
-        this.getCoins().then(() => {
-            this.refs.newCoin.filterCoins(false);
-            return this.getAllLocalData();
+        this.getAllLocalData().then(() => {
+            return this.getCoins();
         }).then(() => {
+            return this.getCoinData();
+        }).then(() => {
+            this.refs.newCoin.filterCoins(false);
             return this.getRates();
         }).then(() => {
             this.calculateValues();
@@ -55,17 +58,22 @@ class DashboardComponent extends React.Component {
         });
     }
     
-    getCoins () {
+    getCoins (force) {
         return new Promise((resolve) => {
-            let url = "https://min-api.cryptocompare.com/data/all/coinlist";
-            
-            xhr(url, 'GET', (data) => {
-                this.setState({
-                    coins: data.Data
-                }, () => {
-                    resolve();
+            console.log(this.state.coins, force);
+            if (this.state.coins && !force) {
+                resolve();
+            } else {
+                let url = "https://min-api.cryptocompare.com/data/all/coinlist";
+
+                xhr(url, 'GET', (data) => {
+                    this.setState({
+                        coins: data.Data
+                    }, () => {
+                        resolve();
+                    });
                 });
-            });
+            }
         });
     }
     
@@ -199,7 +207,12 @@ class DashboardComponent extends React.Component {
                 quantity = 0;
             
             coin.transactions.forEach((transaction) => {
-                 quantity += transaction.quantity;
+                if (transaction.type === 'BUY') {
+                    quantity += transaction.quantity;
+                } else {
+                    quantity -= transaction.quantity;
+                }
+                 
             });
             
             values.coins.push({
@@ -274,56 +287,34 @@ class DashboardComponent extends React.Component {
             delete portfolioCopy[coin];  
         }
 
-        this.setState({portfolio: portfolioCopy});
-    }
-
-    getCoinData() {
-        xhr(`/api/v1/portfolios/${ this.state._id }`, 'get', (data) => {
-            this.setState({
-                _id: data._id,
-                portfolio: data.portfolio
-            }, () => {
-                this.getRates().then(() => {
-                    this.calculateValues();
-                });
-            });
+        this.setState({
+            portfolio: portfolioCopy
+        }, () => {
+            this.saveCoinData();
         });
     }
 
-    setLocalData(key, data) {
-      localStorage.setItem(key, JSON.stringify(data));   
+    getCoinData() {
+        return new Promise((resolve) => {
+            if (this.state._id) {
+                xhr(`/api/v1/portfolios/${ this.state._id }`, 'get', (data) => {
+                    this.setState({
+                        _id: data._id,
+                        portfolio: data.portfolio
+                    }, () => {
+                        resolve();
+                    });
+                });
+            } else {
+                resolve();
+            }
+        });
     }
     
-    setAllLocalData() {
-        this.setLocalData('_id', this.state._id);
-        this.setLocalData('portfolio', this.state.portfolio);
-        this.setLocalData('rates', this.state.rates);
-        this.setLocalData('portfolioValues', this.state.portfolioValues);
-        this.setLocalData('fiatRates', this.state.fiatRates);
-        this.setLocalData('coins', this.state.coins);
-    }
-
-    getLocalData(key) {
-        const value = localStorage.getItem(key);
-        if (value) {
-            this.setState({ [key]: JSON.parse(value) });
-            return;
-        }  
-    }
-    
-    getAllLocalData() {
-        this.getLocalData('_id');
-        this.getLocalData('portfolio');
-        this.getLocalData('rates');
-        this.getLocalData('portfolioValues');
-        this.getLocalData('fiatRates');
-        this.getLocalData('coins');
-    }
-
     saveCoinData() {
-        if(this.state._id !== "") {
-            xhr(`/api/v1/portfolios/${ this.state._id }`, 'PUT', (res) => {
-
+        if(this.state._id) {
+            xhr(`/api/v1/portfolios/${ this.state._id }`, 'PUT', () => {
+                
             }, 'json', { "id_": this.state._id, "portfolio": this.state.portfolio });  
         } else {
             xhr('/api/v1/portfolios', 'POST', (res) => {
@@ -334,8 +325,44 @@ class DashboardComponent extends React.Component {
         }    
     }
 
-    onChange(e) {
-        this.setState({_id: e.target.value});
+    setLocalData(key, data) {
+      localStorage.setItem(key, JSON.stringify(data));   
+    }
+    
+    setAllLocalData() {
+        this.setLocalData('coins', this.state.coins);
+        this.setLocalData('_id', this.state._id);
+        this.setLocalData('portfolio', this.state.portfolio);
+        this.setLocalData('rates', this.state.rates);
+        this.setLocalData('portfolioValues', this.state.portfolioValues);
+        this.setLocalData('fiatRates', this.state.fiatRates);
+    }
+
+    getLocalData(key) {
+        return new Promise((resolve) => {
+            const value = localStorage.getItem(key);
+            if (value) {
+                this.setState({
+                    [key]: JSON.parse(value) 
+                }, () => {
+                    resolve();
+                });
+                return;
+            } else {
+                resolve();
+            }
+        })
+    }
+    
+    getAllLocalData() {
+        return Promise.all([
+            this.getLocalData('coins'),
+            this.getLocalData('_id'),
+            this.getLocalData('portfolio'),
+            this.getLocalData('rates'),
+            this.getLocalData('portfolioValues'),
+            this.getLocalData('fiatRates')
+        ]);
     }
     
     addCoin (coin, init) {
@@ -349,6 +376,7 @@ class DashboardComponent extends React.Component {
             this.getRates().then(() => {
                 this.calculateValues();
             });
+            this.saveCoinData();
         });
     }
     
@@ -356,6 +384,25 @@ class DashboardComponent extends React.Component {
         this.setState({
             selectedCoin: null,
             addCoin: null
+        });
+    }
+    
+    loadFromIdhandler () {
+        this.setState({
+            editId: true
+        });
+    }
+    
+    updateIdhandler () {
+        this.setState({
+            _id: this.refs.idInput,
+            editId: null
+        }, () => {
+            this.getCoinData().then(() => {
+                this.getRates().then(() => {
+                    this.calculateValues();
+                });
+            });
         });
     }
 
@@ -378,9 +425,6 @@ class DashboardComponent extends React.Component {
                         <ul>
                             <li onClick={self.refreshData.bind(self)}>Refresh</li>
                             <li onClick={self.newOpen.bind(self)}>Add Coin</li>
-                            <li className="hidem"><input type="text" onChange={this.onChange.bind(self)} value={this.state._id} /></li>
-                            <li className="hidem" onClick={self.getCoinData.bind(self)}>Load Coins</li>
-                            <li className="hidem" onClick={self.saveCoinData.bind(self)}>Save Coins</li>
                         </ul>
                     </nav>
 
@@ -448,7 +492,18 @@ class DashboardComponent extends React.Component {
                 
                 <div className="footer">
                     <div className="code">
-                        Portfolio ID: {this.state._id}
+                        Portfolio ID: {this.state._id} 
+                        {self.state.editId ? (
+                            <React.Fragment>
+                                <input ref="idInput" type="text" value="" />
+                                <button onClick={self.updateIdhandler.bind(self)}>Update ID</button>
+                            </React.Fragment>
+                          ) : (
+                            <React.Fragment>
+                                {this.state._id} 
+                                <button onClick={self.loadFromIdhandler.bind(self)}>Load from ID</button>
+                            </React.Fragment>
+                          )}
                     </div>
                 </div>
             </React.Fragment>

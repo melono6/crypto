@@ -1,7 +1,5 @@
 {> "partials/structure/main" /}
 
 {<main-content}
-    <div class="app">
-
-    </div>
+    <div class="app"><div class="dash"><nav><div class="title">My Coin Portfolio</div><ul><li>Refresh</li><li>Add Coin</li></ul></nav><div class="overview"><div class="total"><h3>Total Portfolio Value <span>$0.00</span></h3></div><div class="change"><h3>24hr Change <span>+00.00%</span></h3></div></div><div class="coins"><table><thead><tr><th>Coin</th><th>Exchange</th><th>Holdings</th><th>Price</th></tr></thead><tbody></tbody></table></div><div class="overlay"></div></div><div class="footer"><div class="code">Portfolio ID: <button>Load from ID</button></div></div></div>
 {/main-content}

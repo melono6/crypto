@@ -12,7 +12,7 @@ const PRECACHE_URLS = [
 ];
 
 const devEnvs = [
-    'http://localhost:7000'
+    'http://localhost:8000'
 ];
 
 const extensionCache = [
@@ -62,7 +62,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', function (event) {
     let extension = event.request.url.split('.').pop();
     
-    if (event.request.url.startsWith(self.location.origin) && event.request.method === 'GET' && !DEBUG) {
+    if ((event.request.url.startsWith(self.location.origin) || event.request.url.indexOf('/media/') > -1) && event.request.method === 'GET' && !DEBUG && event.request.url.indexOf('/api/v1') === -1) {
         var requestURL = new URL(event.request.url);
         var freshResource = fetch(event.request).then(function (response) {
             var clonedResponse = response.clone();
