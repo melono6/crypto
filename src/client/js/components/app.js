@@ -499,7 +499,7 @@ class DashboardComponent extends React.Component {
                 
                 <div className="footer">
                     <div className="code">
-                        Portfolio ID: {this.state._id} 
+                        Portfolio ID: 
                         {self.state.editId ? (
                             <React.Fragment>
                                 <input type="text" value={self.state.inputId} onChange={self.changeInputIdHandler.bind(self)}/>
