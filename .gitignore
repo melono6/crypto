@@ -2,3 +2,6 @@ node_modules
 dist
 upload
 *.DS_Store
+config/
+Gemfile
+capfile

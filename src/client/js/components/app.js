@@ -35,6 +35,7 @@ class DashboardComponent extends React.Component {
             addCoin: null,
             editId: null,
             coins: null,
+            inputId: ""
         };
     }
 
@@ -395,7 +396,7 @@ class DashboardComponent extends React.Component {
     
     updateIdhandler () {
         this.setState({
-            _id: this.refs.idInput,
+            _id: this.state.inputId,
             editId: null
         }, () => {
             this.getCoinData().then(() => {
@@ -404,6 +405,12 @@ class DashboardComponent extends React.Component {
                 });
             });
         });
+    }
+    
+    changeInputIdHandler (e) {
+        this.setState({
+            inputId: e.target.value
+        }); 
     }
 
     render() {
@@ -492,10 +499,10 @@ class DashboardComponent extends React.Component {
                 
                 <div className="footer">
                     <div className="code">
-                        Portfolio ID: {this.state._id} 
+                        Portfolio ID: 
                         {self.state.editId ? (
                             <React.Fragment>
-                                <input ref="idInput" type="text" value="" />
+                                <input type="text" value={self.state.inputId} onChange={self.changeInputIdHandler.bind(self)}/>
                                 <button onClick={self.updateIdhandler.bind(self)}>Update ID</button>
                             </React.Fragment>
                           ) : (
