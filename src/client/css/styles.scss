@@ -16,6 +16,7 @@ main {
         overflow: hidden;
         position: relative;
         padding-bottom: 79px;
+        min-height: 100vh;
     }
     
     nav {
@@ -61,6 +62,7 @@ main {
     table {
         width: 100%;
         border-spacing: 0;
+        font-size: 1.6rem;
         
         img {
            width: 3rem; 
@@ -175,6 +177,23 @@ main {
     width: 100vw;
     color: #ffffff;
     font-size: 1.6rem;
+    
+    .code {
+        display: flex;
+        align-items: center;
+    }
+    
+    button {
+        margin: .5rem;
+        padding: .9rem 2rem;
+        flex-grow: 1;
+        border: 0;
+        background-color: $blue;
+        color: #ffffff;
+        font-size: 1.6rem;
+        flex-grow: 0;
+        margin-left: auto;
+    }
 }
 
 @media (min-width:128px) and (max-width:767px) {
