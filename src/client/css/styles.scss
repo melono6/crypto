@@ -6,6 +6,7 @@ html, body {
 }
 
 $blue: #0a5ba8;
+$blue-dark: #5b6472;
 
 main {
     font-size: 2rem;
@@ -14,7 +15,8 @@ main {
     .app {
         overflow: hidden;
         position: relative;
-        padding-bottom: 5.9rem;
+        padding-bottom: 79px;
+        min-height: 100vh;
     }
     
     nav {
@@ -60,13 +62,14 @@ main {
     table {
         width: 100%;
         border-spacing: 0;
+        font-size: 1.6rem;
         
         img {
            width: 3rem; 
         }
         
         thead {
-            background-color: grey;
+            background-color: $blue-dark;
             
             th {
                 font-size: 1.6rem;
@@ -167,13 +170,30 @@ main {
 
 .footer {
     padding: 2rem;
-    background-color: grey;
+    background-color: $blue-dark;
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100vw;
     color: #ffffff;
     font-size: 1.6rem;
+    
+    .code {
+        display: flex;
+        align-items: center;
+    }
+    
+    button {
+        margin: .5rem;
+        padding: .9rem 2rem;
+        flex-grow: 1;
+        border: 0;
+        background-color: $blue;
+        color: #ffffff;
+        font-size: 1.6rem;
+        flex-grow: 0;
+        margin-left: auto;
+    }
 }
 
 @media (min-width:128px) and (max-width:767px) {
