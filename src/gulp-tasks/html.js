@@ -22,8 +22,10 @@ module.exports = function (gulp) {
                         if (require.cache[require.resolve(path)]) {
                             delete require.cache[require.resolve(path)];
                         }
-
+                        console.log(path);
                         data = require(path);
+                        
+                        console.log(data);
 
                         return data;
                     } catch (ex) {

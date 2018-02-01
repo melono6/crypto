@@ -37,6 +37,12 @@ class DashboardComponent extends React.Component {
             coins: null,
             inputId: ""
         };
+        
+        window.onpopstate = () => {
+            if (window.location.hash === "") {
+                this.closeOthers();
+            }
+        };
     }
 
     componentDidMount() {
@@ -264,19 +270,23 @@ class DashboardComponent extends React.Component {
     
     coinClickHandler(coin) {
         this.setState({selectedCoin: coin});
+        history.pushState(null, null, "#coin");
     }
     
     coinClose() {
-        this.setState({selectedCoin: null});  
+        this.setState({selectedCoin: null});
+        history.pushState(null, null, "/");
     }
     
     newOpen() {
         document.querySelector('.search-container input').focus();
         this.setState({addCoin: true});  
+        history.pushState(null, null, "#add");
     }
     
     newClose() {
         this.setState({addCoin: null});
+        history.pushState(null, null, "/");
     }
     
     updateCoin(coin, value) {
@@ -386,6 +396,7 @@ class DashboardComponent extends React.Component {
             selectedCoin: null,
             addCoin: null
         });
+        history.pushState(null, null, "/");
     }
     
     loadFromIdhandler () {
