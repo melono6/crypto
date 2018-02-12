@@ -9,7 +9,7 @@ module.exports = function (router) {
         
         let query = req.url;
         
-        https.get('https://www.cryptocompare.com/api/data/coinsnapshot/' + query, (resp) => {
+        https.get('https://www.cryptocompare.com/api/data/coinsnapshotfullbyid/' + query, (resp) => {
             let body = '';
 
             resp.setEncoding('utf8');

@@ -20,13 +20,13 @@ class New extends React.Component {
     
     getExchanges(coin) {
         return new Promise((resolve) => {
-            let url = "/api/v1/coinsnapshot/?fsym=" + coin.Symbol + "&tsym=BTC";
+            let url = "/api/v1/coinsnapshotfullbyid/?id=" + coin.Id;
             
             xhr(url, 'GET', (data) => {
                 this.setState({
                     selectedCoin: {
                         coin: coin,
-                        exchanges: data.Data.exchanges
+                        subs: data.Data.Subs
                     }
                 });
                 resolve();
@@ -69,8 +69,34 @@ class New extends React.Component {
     addCoin (coin) {
         this.props.addCoin(coin.Symbol, {
             transactions: [],
-            exchange: 'Poloniex'
+            exchange: 'Poloniex',
+            pairing: 'BTC'
         });
+    }
+    
+    exchangeView () {
+        let exchanges = [],
+            pairings = [];
+        
+        this.state.selectedCoin.subs.split('~').forEach((sub) => {
+            exchanges.push(sub[3]);
+            pairings.push(sub[1]);
+        });
+        
+        return (
+            <React.Fragment>
+                <select>
+                    {exchanges.map(function (exchange, i) {
+                        return <option key={i} value={exchange}>{exchange}</option>;
+                    })}
+                </select>
+                <select>
+                     {pairings.map(function (pairing, i) {
+                        return <option key={i} value={pairing}>{pairing}</option>;
+                     })}    
+                </select>
+            </React.Fragment>
+        );
     }
 
     render() {
