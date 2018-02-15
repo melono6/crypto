@@ -9,7 +9,12 @@ module.exports = function (router) {
         
         let query = req.url;
         
-        https.get('https://www.cryptocompare.com/api/data/coinsnapshotfullbyid/' + query, (resp) => {
+        https.get({
+            hostname: 'www.cryptocompare.com',
+            path: '/api/data/coinsnapshotfullbyid/' + query,
+            port: 443,
+            rejectUnauthorized: false
+        }, (resp) => {
             let body = '';
 
             resp.setEncoding('utf8');

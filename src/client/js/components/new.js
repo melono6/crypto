@@ -26,12 +26,24 @@ class New extends React.Component {
                 this.setState({
                     selectedCoin: {
                         coin: coin,
-                        subs: data.Data.Subs
+                        subs: data.Data.Subs,
+                        form: {
+                            pairing: "",
+                            exchange: ""
+                        }
                     }
                 });
                 resolve();
             });
         });
+    }
+    
+    formChange(field, e) {
+        let selectedCopy = Object.assign({}, this.state.selectedCoin);
+        
+        selectedCopy.form[field] = e.target.value;
+        
+        this.setState({selectedCoin: selectedCopy});
     }
     
     onSearch (e) {
@@ -66,11 +78,15 @@ class New extends React.Component {
         });
     }
     
-    addCoin (coin) {
-        this.props.addCoin(coin.Symbol, {
+    addCoin () {
+        this.props.addCoin(this.state.selectedCoin.coin.Symbol, {
             transactions: [],
-            exchange: 'Poloniex',
-            pairing: 'BTC'
+            exchange: this.state.selectedCoin.form.exchange,
+            pairing: this.state.selectedCoin.form.pairing
+        });
+        
+        this.setState({
+            selectedCoin: null
         });
     }
     
@@ -78,40 +94,44 @@ class New extends React.Component {
         let exchanges = [],
             pairings = [];
         
-        this.state.selectedCoin.subs.split('~').forEach((sub) => {
-            exchanges.push(sub[3]);
-            pairings.push(sub[1]);
+        this.state.selectedCoin.subs.forEach((sub) => {
+            sub = sub.split('~');
+
+            if ((!this.state.selectedCoin.form.exchange || this.state.selectedCoin.form.exchange === sub[1]) && pairings.indexOf(sub[3]) < 0) {
+                pairings.push(sub[3]);
+            }
+            
+            if ((!this.state.selectedCoin.form.pairing || this.state.selectedCoin.form.pairing === sub[3]) && exchanges.indexOf(sub[1]) < 0) {
+                exchanges.push(sub[1]);
+            }
         });
         
         return (
             <React.Fragment>
-                <select>
-                    {exchanges.map(function (exchange, i) {
-                        return <option key={i} value={exchange}>{exchange}</option>;
-                    })}
-                </select>
-                <select>
-                     {pairings.map(function (pairing, i) {
-                        return <option key={i} value={pairing}>{pairing}</option>;
-                     })}    
-                </select>
+                <form>
+                    <select value={this.state.selectedCoin.form.exchange} onChange={this.formChange.bind(this, 'exchange')}>
+                        <option value="">- Exchange - </option>
+                        {exchanges.map(function (exchange, i) {
+                            return <option key={i} value={exchange}>{exchange}</option>;
+                        })}
+                    </select>
+                    <select value={this.state.selectedCoin.form.pairing} onChange={this.formChange.bind(this, 'pairing')}>
+                        <option value="">- Pairings - </option>
+                         {pairings.map(function (pairing, i) {
+                            return <option key={i} value={pairing}>{pairing}</option>;
+                         })}    
+                    </select>
+                    <button disabled={!this.state.selectedCoin.form.pairing || !this.state.selectedCoin.form.exchange} onClick={this.addCoin.bind(this)}>Add Coin</button>
+                </form>
             </React.Fragment>
         );
     }
-
-    render() {
+    
+    coinView () {
         let self = this;
-        
-        return (
-            <div className="coin">
-                <nav>
-                    <div className="title" onClick={this.props.newClose}>
-                       ← Add Coin
-                    </div>
-                    <ul>
 
-                    </ul>
-                </nav>
+        return (
+            <React.Fragment>
                 <div className="search-container">
                     <input type="text" placeholder="Search coins" onChange={self.onSearch.bind(self)} />
                 </div>
@@ -130,7 +150,7 @@ class New extends React.Component {
                         <tbody>
                              {self.state.filteredCoins.map(function (coin, i) {
                                 return (
-                                    <tr key={i} onClick={self.addCoin.bind(self, coin)}>
+                                    <tr key={i} onClick={self.getExchanges.bind(self, coin)}>
                                         <td>
                                             <h4>{coin.Name}</h4>
                                         </td>
@@ -143,6 +163,25 @@ class New extends React.Component {
                         </tbody>
                     </table>
                 </div>
+            </React.Fragment>
+        );
+    }
+
+    render() {
+        let self = this,
+            body = this.state.selectedCoin ? this.exchangeView() : this.coinView();
+        
+        return (
+            <div className="coin">
+                <nav>
+                    <div className="title" onClick={this.props.newClose}>
+                       ← Add Coin
+                    </div>
+                    <ul>
+                        <li onClick={self.props.syncCoins}>Sync Coins</li>
+                    </ul>
+                </nav>
+                {body}
             </div>
         );
     }

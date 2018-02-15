@@ -174,7 +174,8 @@ class DashboardComponent extends React.Component {
 
         socket.emit('SubAdd', { subs: subscription });
         socket.on("m", (message) =>  {
-            this.setRate(message);
+            //console.log(message);
+            //this.setRate(message);
         });
     }
     
@@ -505,7 +506,7 @@ class DashboardComponent extends React.Component {
                 </div>
                 
                 <div className={self.state.addCoin ? 'show add-container' : 'add-container'}>
-                    <New ref="newCoin" newClose={self.newClose.bind(self)} updateCoin={self.updateCoin.bind(self)} coins={self.state.coins} addCoin={self.addCoin.bind(self)} />
+                    <New ref="newCoin" newClose={self.newClose.bind(self)} updateCoin={self.updateCoin.bind(self)} coins={self.state.coins} addCoin={self.addCoin.bind(self)} syncCoins={self.getCoins.bind(self, true)}/>
                 </div>
                 
                 <div className="footer">
