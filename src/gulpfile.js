@@ -13,6 +13,7 @@ require('fs').readdirSync(tasksPath).forEach(
     }
 );
 
-gulp.task('build', gulpSequence([ 'html', 'css', 'js', 'static'], 'inline'));
+gulp.task('build', gulpSequence([ 'html', 'css', 'js', 'static']));
+gulp.task('build-prod', gulpSequence([ 'html', 'css', 'js', 'static'], 'inline'));
 gulp.task('default', ['build']);
 gulp.task('develop', gulpSequence('build', ['html-watch','css-watch', 'js-watch', 'static-watch', 'server', 'browsersync']));

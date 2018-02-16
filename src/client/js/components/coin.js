@@ -83,7 +83,7 @@ class Coin extends React.Component {
         return (
             <div className="coin">
                 <nav>
-                    <div className="title" onClick={this.coinClose.bind(this)}>
+                    <div className="title" onClick={this.props.back}>
                        ← {this.props.selectedCoin}
                     </div>
                     <ul>

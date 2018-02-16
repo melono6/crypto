@@ -10,7 +10,12 @@ class New extends React.Component {
         super(props);
         this.state = {
             filteredCoins: [],
-            selectedCoin: null
+            selectedCoin: {
+                form: {
+                    exchange: "",
+                    pairing: ""
+                }
+            }
         };
     }
 
@@ -23,16 +28,8 @@ class New extends React.Component {
             let url = "/api/v1/coinsnapshotfullbyid/?id=" + coin.Id;
             
             xhr(url, 'GET', (data) => {
-                this.setState({
-                    selectedCoin: {
-                        coin: coin,
-                        subs: data.Data.Subs,
-                        form: {
-                            pairing: "",
-                            exchange: ""
-                        }
-                    }
-                });
+                history.pushState(null, null, "#coin-ex");
+                this.props.setCoin(coin, data.Data.Subs);
                 resolve();
             });
         });
@@ -79,22 +76,20 @@ class New extends React.Component {
     }
     
     addCoin () {
-        this.props.addCoin(this.state.selectedCoin.coin.Symbol, {
+        this.props.addCoin(this.props.selectedCoin.coin.Symbol, {
             transactions: [],
             exchange: this.state.selectedCoin.form.exchange,
             pairing: this.state.selectedCoin.form.pairing
         });
         
-        this.setState({
-            selectedCoin: null
-        });
+        this.props.setCoin(null);
     }
     
     exchangeView () {
         let exchanges = [],
             pairings = [];
         
-        this.state.selectedCoin.subs.forEach((sub) => {
+        this.props.selectedCoin.subs.forEach((sub) => {
             sub = sub.split('~');
 
             if ((!this.state.selectedCoin.form.exchange || this.state.selectedCoin.form.exchange === sub[1]) && pairings.indexOf(sub[3]) < 0) {
@@ -121,7 +116,7 @@ class New extends React.Component {
                             return <option key={i} value={pairing}>{pairing}</option>;
                          })}    
                     </select>
-                    <button disabled={!this.state.selectedCoin.form.pairing || !this.state.selectedCoin.form.exchange} onClick={this.addCoin.bind(this)}>Add Coin</button>
+                    <button type="button" disabled={!this.state.selectedCoin.form.pairing || !this.state.selectedCoin.form.exchange} onClick={this.addCoin.bind(this)}>Add Coin</button>
                 </form>
             </React.Fragment>
         );
@@ -169,12 +164,12 @@ class New extends React.Component {
 
     render() {
         let self = this,
-            body = this.state.selectedCoin ? this.exchangeView() : this.coinView();
+            body = this.props.selectedCoin ? this.exchangeView() : this.coinView();
         
         return (
             <div className="coin">
                 <nav>
-                    <div className="title" onClick={this.props.newClose}>
+                    <div className="title" onClick={this.props.back}>
                        ← Add Coin
                     </div>
                     <ul>

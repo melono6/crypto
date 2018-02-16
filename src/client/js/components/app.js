@@ -35,12 +35,17 @@ class DashboardComponent extends React.Component {
             addCoin: null,
             editId: null,
             coins: null,
-            inputId: ""
+            inputId: "",
+            selectedNewCoin: null
         };
         
         window.onpopstate = () => {
             if (window.location.hash === "") {
                 this.closeOthers();
+            }
+            
+            if (window.location.hash !== "add-ex") {
+                this.setState({selectedNewCoin: null});
             }
         };
     }
@@ -65,9 +70,12 @@ class DashboardComponent extends React.Component {
         });
     }
     
+    back () {
+        window.history.back();
+    }
+    
     getCoins (force) {
         return new Promise((resolve) => {
-            console.log(this.state.coins, force);
             if (this.state.coins && !force) {
                 resolve();
             } else {
@@ -174,8 +182,7 @@ class DashboardComponent extends React.Component {
 
         socket.emit('SubAdd', { subs: subscription });
         socket.on("m", (message) =>  {
-            //console.log(message);
-            //this.setRate(message);
+            this.setRate(message);
         });
     }
     
@@ -276,7 +283,6 @@ class DashboardComponent extends React.Component {
     
     coinClose() {
         this.setState({selectedCoin: null});
-        history.pushState(null, null, "/");
     }
     
     newOpen() {
@@ -287,7 +293,6 @@ class DashboardComponent extends React.Component {
     
     newClose() {
         this.setState({addCoin: null});
-        history.pushState(null, null, "/");
     }
     
     updateCoin(coin, value) {
@@ -397,7 +402,6 @@ class DashboardComponent extends React.Component {
             selectedCoin: null,
             addCoin: null
         });
-        history.pushState(null, null, "/");
     }
     
     loadFromIdhandler () {
@@ -423,6 +427,21 @@ class DashboardComponent extends React.Component {
         this.setState({
             inputId: e.target.value
         }); 
+    }
+    
+    setSelectedNewCoin (coin, subs) {
+        if (coin && subs) {
+            this.setState({
+                selectedNewCoin: {
+                    coin: coin,
+                    subs: subs
+                }
+            });
+        } else {
+            this.setState({
+                selectedCoin: null
+            });
+        }
     }
 
     render() {
@@ -502,11 +521,11 @@ class DashboardComponent extends React.Component {
                     </div>
                 </div>
                 <div className={self.state.selectedCoin ? 'show coin-container' : 'coin-container'}>
-                    <Coin selectedCoin={self.state.selectedCoin} coinPortfolio={self.state.portfolio[self.state.selectedCoin]} coinClose={self.coinClose.bind(self)} updateCoin={self.updateCoin.bind(self)} />
+                    <Coin selectedCoin={self.state.selectedCoin} coinPortfolio={self.state.portfolio[self.state.selectedCoin]} coinClose={self.coinClose.bind(self)} updateCoin={self.updateCoin.bind(self)} back={self.back.bind(self)} />
                 </div>
                 
                 <div className={self.state.addCoin ? 'show add-container' : 'add-container'}>
-                    <New ref="newCoin" newClose={self.newClose.bind(self)} updateCoin={self.updateCoin.bind(self)} coins={self.state.coins} addCoin={self.addCoin.bind(self)} syncCoins={self.getCoins.bind(self, true)}/>
+                    <New ref="newCoin" newClose={self.newClose.bind(self)} updateCoin={self.updateCoin.bind(self)} coins={self.state.coins} addCoin={self.addCoin.bind(self)} syncCoins={self.getCoins.bind(self, true)} back={self.back.bind(self)} selectedCoin={self.state.selectedNewCoin} setCoin={self.setSelectedNewCoin.bind(self)}/>
                 </div>
                 
                 <div className="footer">
