@@ -47,6 +47,10 @@ class DashboardComponent extends React.Component {
             if (window.location.hash !== "add-ex") {
                 this.setState({selectedNewCoin: null});
             }
+            
+            if (window.location.hash === "add") {
+                this.setState({addCoin: true});
+            }
         };
     }
 
@@ -286,9 +290,12 @@ class DashboardComponent extends React.Component {
     }
     
     newOpen() {
-        document.querySelector('.search-container input').focus();
-        this.setState({addCoin: true});  
-        history.pushState(null, null, "#add");
+        this.setState({addCoin: true}, () => {
+            history.pushState(null, null, "#add");
+            setTimeout(() => {
+                document.querySelector('.search-container input').focus();
+            }, 100);
+        });  
     }
     
     newClose() {
@@ -388,7 +395,8 @@ class DashboardComponent extends React.Component {
         portfolio[coin] = init;
         
         this.setState({
-            portfolio: portfolio
+            portfolio: portfolio,
+            addCoin: null
         }, () => {
             this.getRates().then(() => {
                 this.calculateValues();
@@ -401,6 +409,8 @@ class DashboardComponent extends React.Component {
         this.setState({
             selectedCoin: null,
             addCoin: null
+        }, () => {
+            history.pushState(null, null, "#");
         });
     }
     
@@ -461,8 +471,8 @@ class DashboardComponent extends React.Component {
                             My Coin Portfolio
                         </div>
                         <ul>
-                            <li onClick={self.refreshData.bind(self)}>Refresh</li>
-                            <li onClick={self.newOpen.bind(self)}>Add Coin</li>
+                            <li onClick={self.refreshData.bind(self)}><img src="/img/refresh.svg"/><span>Refresh</span></li>
+                            <li onClick={self.newOpen.bind(self)}><img src="/img/add.svg"/><span>Add Coin</span></li>
                         </ul>
                     </nav>
 
@@ -481,7 +491,7 @@ class DashboardComponent extends React.Component {
                                     <th>
                                         Coin
                                     </th>
-                                    <th>
+                                    <th className="exchange">
                                         Exchange
                                     </th>
                                     <th>
@@ -500,7 +510,7 @@ class DashboardComponent extends React.Component {
                                                 <img src={"https://www.cryptocompare.com" + self.state.coins[coin.coin].ImageUrl}/>
                                                 <h4>{coin.coin}</h4>
                                             </td>
-                                            <td>
+                                            <td className="exchange">
                                                 {coin.exchange}
                                             </td>
                                             <td>
